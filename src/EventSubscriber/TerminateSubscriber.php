@@ -51,13 +51,27 @@ class TerminateSubscriber implements EventSubscriberInterface
             KernelEvents::TERMINATE => [
                 ['terminateProcess', 10]
             ] ,
-           /* KernelEvents::RESPONSE => [
+            KernelEvents::RESPONSE => [
                 ['customResponse',0],
-            ],*/
+            ],
         ];
     }
     public function customResponse(ResponseEvent $event)
     {
+        if ($event->getRequest()->getMethod() === 'OPTIONS') {
+            $event->setResponse(
+                    new Response('', 204, [
+                        'Access-Control-Allow-Origin' => '*',
+                        'Access-Control-Allow-Credentials' => 'true',
+                        'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+                        'Access-Control-Allow-Headers' => 'DNT, X-User-Token, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type',
+                        'Access-Control-Max-Age' => 1728000,
+                        'Content-Type' => 'text/plain charset=UTF-8',
+                        'Content-Length' => 0
+                    ])
+                );
+            return ;
+        }
         $response = $event->getResponse();
         $response->headers->set('Content-Type', 'application/json');
         $response->setContent($response->getContent());
