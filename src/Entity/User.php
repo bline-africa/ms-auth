@@ -160,6 +160,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('User:read')]
     private $code;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $accountId;
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
@@ -529,6 +534,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCode(?string $code): self
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function getAccountId(): ?string
+    {
+        return $this->accountId;
+    }
+
+    public function setAccountId(?string $accountId): self
+    {
+        $this->accountId = $accountId;
 
         return $this;
     }

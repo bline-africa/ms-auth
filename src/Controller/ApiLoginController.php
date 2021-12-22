@@ -184,6 +184,40 @@ class ApiLoginController extends AbstractController
     }
 
     /**
+     * @Route("api/create/openid", name="create_user", methods="POST")
+     */
+    function loginOpenId(
+        Request $request,
+        SerializerInterface $serializer,
+        CreateUserService $userService
+    ): JsonResponse {
+        $content = $request->getContent();
+        $parsed = json_decode($content);
+        $accountId = $parsed->accountId;
+        $lastname = $parsed->lastname;
+        $firstname = $parsed->firstname;
+        $email = $parsed->email;
+        $profilId = $parsed->profilId;
+        $phone1 = $parsed->phone1;
+        $adress = $parsed->address;
+        $accountType = $parsed->accountType;
+        $user = new User();
+
+        $user->setUsername($email);
+        $user->setFirstname($firstname);
+        $user->setLastname($lastname);
+        $user->setEmail($email);
+        $user->setPhone1($phone1);
+        $user->setAddress($adress);
+        $user->setAccountType($accountType);
+        $user->setAccountId($accountId);
+        $user->setMustChangePassword(false);
+        
+
+        return $userService->openId($user,$profilId);
+    }
+
+    /**
      * @Route("api/user/validate", name="validate_user", methods="POST")
      */
 
@@ -194,5 +228,17 @@ class ApiLoginController extends AbstractController
         $code = json_decode($content)->code;
 
         return $userService->validateUser((int)$id, $code);
+    }
+
+    /**
+     * @Route("api/user/send_code", name="send_code", methods="POST")
+     */
+
+    public function sendCode(Request $request, CreateUserService $userService)
+    {
+        $content = $request->getContent();
+        $id = json_decode($content)->id;
+
+        return $userService->sendCode((int)$id);
     }
 }

@@ -197,6 +197,58 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
+    public function openId(User $user,int $idProfil)
+    {
+        try {
+            $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        if(strtoupper($user->getAccountType() ) != "FACEBOOK" && strtoupper($user->getAccountType() )  != "GOOGLE"){
+            return new JsonResponse(["message" => "account type not found"], Response::HTTP_NOT_FOUND);
+        }
+        //  dd($verifProfil);
+        // $verifAdmin = new stdClass();
+        if (is_null($verifProfil)) {
+            return new JsonResponse(["message" => "profil not exists"], Response::HTTP_METHOD_NOT_ALLOWED);
+        }
+       // dd("");
+        $verifUser = $this->userRepository->findOneBy(["accountId" => $user->getAccountId(),"account_type" => $user->getAccountType()]);
+        if($verifUser == null){
+            $verifUser = $user;
+        }
+
+        $verifUser->setPassword($this->hasher->hashPassword($verifUser, $verifUser->getAccountId()));
+        $random = rand(10000, 99999);
+        $verifUser->setRoles($verifProfil->getRoles());
+        $verifUser->setProfilId($verifProfil);
+        $verifUser->setCode($random);
+        // dd($admin);
+        $errors = $this->validator->validate($verifUser);
+        $verifUser->setIsvalid(true);
+        $verifUser->setCreatedAt(new DateTimeImmutable());
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $violation) {
+                $messages[$violation->getPropertyPath()][] = $violation->getMessage();
+            }
+            return new JsonResponse(["message" => $messages], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->em->persist($verifUser);
+            $this->em->flush();
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
+        }
+
+        $json = $this->serializer->serialize(["user" =>$verifUser,"token" => $this->jwt->create($verifUser)], 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+    }
+
     public function validateUser($id, $code)
     {
         $user = $this->userRepository->findOneBy(["id" => $id,"isvalid" => false]);
@@ -215,5 +267,18 @@ class CreateUserService
         ], ['groups' => 'User:read']));
         //dd($json);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    public function sendCode($id)
+    {
+        $user = $this->userRepository->findOneBy(["id" => $id]);
+        if($user == null){
+            return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
+        }
+        $json = $this->serializer->serialize($user, 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_OK, [], true); 
     }
 }

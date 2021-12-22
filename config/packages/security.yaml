@@ -44,7 +44,7 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         public:
             security: false
-            pattern: ^/(api/profil/list|api/create/user|api/user/validate)
+            pattern: ^/(api/profil/list|api/create/user|api/user/validate|api/user/send_code|api/create/openid)
         admin_user:
             pattern: ^/api/login_user
             stateless: true

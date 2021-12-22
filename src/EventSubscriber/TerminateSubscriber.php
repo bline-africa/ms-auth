@@ -99,7 +99,8 @@ class TerminateSubscriber implements EventSubscriberInterface
 
 
         //mail à envoyer pour la validation du compe abonné
-        if ($uri == "/api/create/user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_CREATED) {
+        if (($uri == "/api/create/user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_CREATED) ||
+        ($uri == "/api/user/send_code" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK)) {
             try {
                 $user = $this->serializer->deserialize($resContent, User::class, 'json');
                 $recipient = $user->getEmail();
