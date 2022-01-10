@@ -115,9 +115,23 @@ class TerminateSubscriber implements EventSubscriberInterface
                 "logo" => $request->getSchemeAndHttpHost() . "/images/logo_bline.png",
                 //'code_recu' => $random
             ]);
-            $this->mailer->sendEmail("Validation de compte", $content, $recipient);
+            $this->mailer->sendEmail("Validate account", $content, $recipient);
         }
-
+        if($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK){
+            try {
+                $user = $this->serializer->deserialize($resContent, User::class, 'json');
+                $recipient = $user->getEmail();
+                //  $abonne->getCodeR
+            } catch (Exception $ex) {
+                $error = $ex->getMessage();
+            }
+            $content = $this->twig->render('password_code_check.html.twig', [
+                'user' => $user,
+                "logo" => $request->getSchemeAndHttpHost() . "/images/logo_bline.png",
+                //'code_recu' => $random
+            ]);
+            $this->mailer->sendEmail("Password update", $content, $recipient);
+        }
         
        
     }

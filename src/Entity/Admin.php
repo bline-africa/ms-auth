@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @ORM\Entity(repositoryClass=AdminRepository::class)
@@ -18,8 +19,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid",unique=true)
      */
    # #[Groups(['Abonne:read', 'Admin:read', 'Demande:read', 'Message:read', 'Profil:read'])]
    #[Groups('Admin:read')]
@@ -121,9 +121,10 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->adminMetas = new ArrayCollection();
+        $this->id = Uuid::v4();
     }
 
-    public function getId(): ?int
+    public function getId()
     {
         return $this->id;
     }

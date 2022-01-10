@@ -3,11 +3,14 @@
 namespace App\Services\UserServices;
 
 use App\Entity\Admin;
+use App\Entity\History;
 use App\Entity\ProfilAdmin;
 use App\Entity\User;
 use App\Repository\AdminRepository;
+use App\Repository\HistoryRepository;
 use App\Repository\ProfilAdminRepository;
 use App\Repository\UserRepository;
+use App\Services\HistoryServices\CreateHistoryService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -23,8 +26,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\EmailValidator;
+use Symfony\Component\Uid\Uuid;
 
-class ListUserService
+class UpdateUserService
 {
 
     private $em;
@@ -35,19 +40,21 @@ class ListUserService
     private $jwt;
     private $serializer;
     private $userRepository;
+    private $historyRepository;
 
     public function __construct(
         EntityManagerInterface $em,
-        
+        AdminRepository $adminRepository,
         ProfilAdminRepository $profilRepository,
         ValidatorInterface $validator,
         UserPasswordHasherInterface $hasher,
         JWTTokenManagerInterface $jwt,
         SerializerInterface $serializer,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        HistoryRepository $historyRepository
     ) {
         $this->em = $em;
-        $this->userRepository = $userRepository;
+        $this->adminRepository = $adminRepository;
         $this->profilRepository = $profilRepository;
         $this->validator = $validator;
         $this->hasher = $hasher;
@@ -55,27 +62,26 @@ class ListUserService
         $this->serializer = $serializer;
         $this->userRepository = $userRepository;
     }
-   
-    public function listCustomers(): JsonResponse
+  
+
+    public function updateUserPassword($id,$password)
     {
-        $list = $this->userRepository->findByType("ROLE_CUSTOMER");
-        
-       // dd($list);
-        $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
+        try {
+            $userVerif = $this->userRepository->findOneBy(["id" => $id]);
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        if (is_null($userVerif)) {
+            return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+        }
+        $userVerif->setPassword($this->hasher->hashPassword($userVerif, $password));
+        $userVerif->setPasswordCode("");
+
+        $this->em->persist($userVerif);
+        $this->em->flush();
+        $json = $this->serializer->serialize($userVerif, 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
-        
-    }
-    public function listProvider(): JsonResponse
-    {
-        $list = $this->userRepository->findByType("ROLE_PROVIDER");
-        
-       // dd($list);
-        $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
-            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
-        ], ['groups' => 'User:read']));
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
-        
     }
 }

@@ -44,7 +44,7 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         public:
             security: false
-            pattern: ^/(api/profil/list|api/create/user|api/user/validate|api/user/send_code|api/create/openid)
+            pattern: ^/(api/profil/list|api/create/user|api/user/validate|api/user/send_code|api/create/openid|api/user/find_user|api/user/find_user_code|api/user/update_user_password)
         admin_user:
             pattern: ^/api/login_user
             stateless: true
@@ -52,8 +52,8 @@ security:
             provider: user
             json_login:
                 check_path: /api/login_user
-                #success_handler: lexik_jwt_authentication.handler.authentication_success
-                #failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                success_handler: App\Services\UserServices\LoginUserService
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
         api:
             pattern: ^/api
             stateless: true
@@ -90,4 +90,5 @@ security:
         - { path: ^/api/profil/list, roles:  IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: ^/api/provider/*, roles: ROLE_PROVIDER}
         - { path: ^/api/customer/*, roles: ROLE_CUSTOMER}
+        - { path: ^/api/user/user_history, roles: ROLE_ADMIN}
         - { path: ^/api/user/*, roles: ROLE_ADMIN}

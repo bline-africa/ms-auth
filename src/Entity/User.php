@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Uid\Uuid;
 
 /**
  ** @ORM\Entity(repositoryClass=UserRepository::class)
@@ -21,14 +22,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid",unique=true)
      */
     #[Groups('User:read')]
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=false)
      */
     #[Groups('User:read')]
     private $email;
@@ -46,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=255,unique=true)
+     * @ORM\Column(type="string", length=255)
      */
     #[Groups('User:read')]
     private $username;
@@ -163,15 +163,93 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[Groups('User:read')]
     private $accountId;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    #[Groups('User:read')]
+    private $company_name;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    #[Groups('User:read')]
+    private $zip_code;
+
+    
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    #[Groups('User:read')]
+    private $fax;
+
+    /**
+     * @ORM\Column(type="string", length=10, nullable=true)
+     */
+    #[Groups('User:read')]
+    private $title;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    #[Groups('User:read')]
+    private $last_connect;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    #[Groups('User:read')]
+    private $tva;
+
+    /**
+     * @ORM\OneToMany(targetEntity=History::class, mappedBy="userId")
+     */
+    
+    private $histories;
+
+    /**
+     * @ORM\Column(type="string", length=30, nullable=true)
+     */
+    #[Groups('User:read')]
+    private $address_ip;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    #[Groups('User:read')]
+    private $latitude;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    #[Groups('User:read')]
+    private $longitude;
+
+    /**
+     * @ORM\Column(type="string", length=6, nullable=true)
+     */
+    #[Groups('User:read')]
+    private $passwordCode;
+
+    
+
+   
+    
+
 
     public function __construct()
     {
         $this->documents = new ArrayCollection();
         $this->userMetas = new ArrayCollection();
+        $this->connectionHistories = new ArrayCollection();
+        $this->id = Uuid::v4();
+        $this->histories = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId()
     {
         return $this->id;
     }
@@ -549,4 +627,162 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getCompanyName(): ?string
+    {
+        return $this->company_name;
+    }
+
+    public function setCompanyName(?string $company_name): self
+    {
+        $this->company_name = $company_name;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zip_code;
+    }
+
+    public function setZipCode(?string $zip_code): self
+    {
+        $this->zip_code = $zip_code;
+
+        return $this;
+    }
+
+    public function getFax(): ?string
+    {
+        return $this->fax;
+    }
+
+    public function setFax(?string $fax): self
+    {
+        $this->fax = $fax;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getLastConnect(): ?\DateTimeInterface
+    {
+        return $this->last_connect;
+    }
+
+    public function setLastConnect(?\DateTimeInterface $last_connect): self
+    {
+        $this->last_connect = $last_connect;
+
+        return $this;
+    }
+
+    public function getTva(): ?float
+    {
+        return $this->tva;
+    }
+
+    public function setTva(?float $tva): self
+    {
+        $this->tva = $tva;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|History[]
+     */
+    public function getHistories(): Collection
+    {
+        return $this->histories;
+    }
+
+    public function addHistory(History $history): self
+    {
+        if (!$this->histories->contains($history)) {
+            $this->histories[] = $history;
+            $history->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistory(History $history): self
+    {
+        if ($this->histories->removeElement($history)) {
+            // set the owning side to null (unless already changed)
+            if ($history->getUserId() === $this) {
+                $history->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAddressIp(): ?string
+    {
+        return $this->address_ip;
+    }
+
+    public function setAddressIp(?string $address_ip): self
+    {
+        $this->address_ip = $address_ip;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getPasswordCode(): ?string
+    {
+        return $this->passwordCode;
+    }
+
+    public function setPasswordCode(?string $passwordCode): self
+    {
+        $this->passwordCode = $passwordCode;
+
+        return $this;
+    }
+
+    
+
+    
+
+   
+
+    
 }

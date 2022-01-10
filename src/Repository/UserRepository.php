@@ -73,7 +73,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getConnection()
             ->executeQuery(
                 <<<'SQL'
-            SELECT id,lastname,firstname,username,email,isvalid,is_kyc_check,address,phone1,phone2 FROM public.user
+            SELECT id,lastname,firstname,username,email,isvalid,is_kyc_check,account_type,title,fax,company_name,address,phone1,phone2,last_connect,title,fax,tva FROM public.user
             WHERE roles::jsonb ?? :role
             ORDER BY lastname, firstname
 SQL,

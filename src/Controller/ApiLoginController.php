@@ -12,6 +12,9 @@ use App\Repository\ProfilAdminRepository;
 use App\Repository\UserRepository;
 use App\Services\ProfilServices\CreateProfilService;
 use App\Services\UserServices\CreateUserService;
+use App\Services\HistoryServices\CreateHistoryService;
+use App\Services\UserServices\FindUserService;
+use App\Services\UserServices\UpdateUserService;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -142,12 +145,15 @@ class ApiLoginController extends AbstractController
     /**
      * @Route("api/login_user", name="login_user", methods="POST")
      */
-    public function loginUser(Request $request, SerializerInterface $serializer, CreateUserService $userService)
+    public function loginUser(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
     {
+        //dd($request);
         $content = $request->getContent();
-        $admin = $serializer->deserialize($content, User::class, 'json');
-
-        return $userService->loginUser($admin);
+        $idProfil = json_decode($content)->profilId;
+        $user = $serializer->deserialize($content, User::class, 'json');
+        $user->setLastConnect(new DateTimeImmutable());
+        $history = $historiqueService->addHistory($user);
+        return $userService->loginUser($user, $idProfil, $history);
     }
 
     /**
@@ -184,7 +190,7 @@ class ApiLoginController extends AbstractController
     }
 
     /**
-     * @Route("api/create/openid", name="create_user", methods="POST")
+     * @Route("api/create/openid", name="create_user_openid", methods="POST")
      */
     function loginOpenId(
         Request $request,
@@ -212,9 +218,9 @@ class ApiLoginController extends AbstractController
         $user->setAccountType($accountType);
         $user->setAccountId($accountId);
         $user->setMustChangePassword(false);
-        
 
-        return $userService->openId($user,$profilId);
+
+        return $userService->openId($user, $profilId);
     }
 
     /**
@@ -226,8 +232,8 @@ class ApiLoginController extends AbstractController
         $content = $request->getContent();
         $id = json_decode($content)->id;
         $code = json_decode($content)->code;
-
-        return $userService->validateUser((int)$id, $code);
+        //dd($id);
+        return $userService->validateUser($id, $code);
     }
 
     /**
@@ -239,6 +245,41 @@ class ApiLoginController extends AbstractController
         $content = $request->getContent();
         $id = json_decode($content)->id;
 
-        return $userService->sendCode((int)$id);
+        return $userService->sendCode($id);
+    }
+
+    /**
+     * @Route("api/user/find_user", name="find_user", methods="POST")
+     */
+    public function findUserByEmail(Request $request, FindUserService $findUserService): JsonResponse
+    {
+        $content = $request->getContent();
+        $email = json_decode($content)->email;
+        $profil = json_decode($content)->profilId;
+
+        return $findUserService->findUser($email, $profil);
+    }
+
+    /**
+     * @Route("api/user/find_user_code", name="find_user_code", methods="POST")
+     */
+    public function findUserByPasswordCode(Request $request, FindUserService $findUserService): JsonResponse
+    {
+        $content = $request->getContent();
+        $code = json_decode($content)->code;
+
+        return $findUserService->findUserByPasswordCode($code);
+    }
+
+    /**
+     * @Route("api/user/update_user_password", name="update_user_password", methods="POST")
+     */
+    public function updateUserPassword(Request $request, UpdateUserService $updateUserService): JsonResponse
+    {
+        $content = $request->getContent();
+        $id = json_decode($content)->id;
+        $password = json_decode($content)->password;
+
+        return $updateUserService->updateUserPassword($id,$password);
     }
 }

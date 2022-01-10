@@ -3,11 +3,14 @@
 namespace App\Services\UserServices;
 
 use App\Entity\Admin;
+use App\Entity\History;
 use App\Entity\ProfilAdmin;
 use App\Entity\User;
 use App\Repository\AdminRepository;
+use App\Repository\HistoryRepository;
 use App\Repository\ProfilAdminRepository;
 use App\Repository\UserRepository;
+use App\Services\HistoryServices\CreateHistoryService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -24,6 +27,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\EmailValidator;
+use Symfony\Component\Uid\Uuid;
 
 class CreateUserService
 {
@@ -36,6 +40,7 @@ class CreateUserService
     private $jwt;
     private $serializer;
     private $userRepository;
+    private $historyRepository;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -45,7 +50,8 @@ class CreateUserService
         UserPasswordHasherInterface $hasher,
         JWTTokenManagerInterface $jwt,
         SerializerInterface $serializer,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        HistoryRepository $historyRepository
     ) {
         $this->em = $em;
         $this->adminRepository = $adminRepository;
@@ -129,7 +135,7 @@ class CreateUserService
         );
     }
 
-    public function loginUser(User $user)
+    public function loginUser(User $user, $idProfil, $historiqueService)
     {
         // dd($user);
         if (null === $user) {
@@ -137,16 +143,39 @@ class CreateUserService
                 'message' => 'missings credentials'
             ], Response::HTTP_UNAUTHORIZED);
         }
-        //dd($user);
-        $user = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier()]);
-        if (!$user->getIsvalid()) {
-            /* return new JsonResponse([
-                'message' => 'You need valid your account first, account not activated yet !'
-            ], Response::HTTP_UNAUTHORIZED);*/
+
+        try {
+            $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-
-        $json = $this->serializer->serialize(["token" => $this->jwt->create($user)], 'json', array_merge([
+        if ($verifProfil == null) {
+            return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
+        }
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), "profilId" => $verifProfil]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getEmail(), "profilId" => $verifProfil]);
+        //dd($userMail);
+        if ($userMail) {
+            $userVerif = $userMail;
+        }
+         if (!$userVerif->getIsvalid()) {
+             return new JsonResponse([
+                'message' => 'You need valid your account first, account not activated yet !'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+       // dd($user);
+       $userVerif->setLastConnect($user->getLastConnect());
+       $userVerif->setLatitude($user->getLatitude());
+       $userVerif->setLongitude($user->getLongitude());
+       $userVerif->setAddressIp($user->getAddressIp());
+        $history = $historiqueService->addHistory($userVerif);
+        
+        
+        //dd($user);
+        $this->em->persist($userVerif);
+        $this->em->flush();
+        // dd($userVerif);
+        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
@@ -166,11 +195,22 @@ class CreateUserService
         if (is_null($verifProfil)) {
             return new JsonResponse(["message" => "profil not exists"], Response::HTTP_METHOD_NOT_ALLOWED);
         }
+        $verifUser = $this->userRepository->findOneBy(['email' => $user->getEmail(), 'profilId' => $verifProfil]);
+        if ($verifUser) {
+            $message = "User " . $user->getEmail() . " already exists";
+            return new JsonResponse(["message" => $message], Response::HTTP_CONFLICT);
+        }
+        $verifUser = $this->userRepository->findOneBy(['username' => $user->getUserIdentifier(), 'profilId' => $verifProfil]);
+        if ($verifUser) {
+            $message = "User " . $user->getUserIdentifier() . " already exists";
+            return new JsonResponse(["message" => $message], Response::HTTP_CONFLICT);
+        }
         $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
         $random = rand(10000, 99999);
         $user->setRoles($verifProfil->getRoles());
         $user->setProfilId($verifProfil);
         $user->setCode($random);
+
         // dd($admin);
         $errors = $this->validator->validate($user);
         $user->setIsvalid(false);
@@ -197,14 +237,14 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
-    public function openId(User $user,int $idProfil)
+    public function openId(User $user, int $idProfil)
     {
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
         } catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        if(strtoupper($user->getAccountType() ) != "FACEBOOK" && strtoupper($user->getAccountType() )  != "GOOGLE"){
+        if (strtoupper($user->getAccountType()) != "FACEBOOK" && strtoupper($user->getAccountType())  != "GOOGLE") {
             return new JsonResponse(["message" => "account type not found"], Response::HTTP_NOT_FOUND);
         }
         //  dd($verifProfil);
@@ -212,9 +252,9 @@ class CreateUserService
         if (is_null($verifProfil)) {
             return new JsonResponse(["message" => "profil not exists"], Response::HTTP_METHOD_NOT_ALLOWED);
         }
-       // dd("");
-        $verifUser = $this->userRepository->findOneBy(["accountId" => $user->getAccountId(),"account_type" => $user->getAccountType()]);
-        if($verifUser == null){
+        // dd("");
+        $verifUser = $this->userRepository->findOneBy(["accountId" => $user->getAccountId(), "account_type" => $user->getAccountType(),"profilId" => $verifProfil]);
+        if ($verifUser == null) {
             $verifUser = $user;
         }
 
@@ -242,7 +282,7 @@ class CreateUserService
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
 
-        $json = $this->serializer->serialize(["user" =>$verifUser,"token" => $this->jwt->create($verifUser)], 'json', array_merge([
+        $json = $this->serializer->serialize(["user" => $verifUser, "token" => $this->jwt->create($verifUser)], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
@@ -251,7 +291,8 @@ class CreateUserService
 
     public function validateUser($id, $code)
     {
-        $user = $this->userRepository->findOneBy(["id" => $id,"isvalid" => false]);
+      //  dd($id);
+        $user = $this->userRepository->findOneBy(["id" => $id, "isvalid" => false]);
         if ($user == null) {
             return new JsonResponse(["message" => "user not found or account already valid"], Response::HTTP_NOT_FOUND);
         }
@@ -272,13 +313,13 @@ class CreateUserService
     public function sendCode($id)
     {
         $user = $this->userRepository->findOneBy(["id" => $id]);
-        if($user == null){
+        if ($user == null) {
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
         $json = $this->serializer->serialize($user, 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
-        return new JsonResponse($json, Response::HTTP_OK, [], true); 
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

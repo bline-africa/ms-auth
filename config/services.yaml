@@ -7,9 +7,10 @@ parameters:
 
 services:
     App\Services\UserServices\CreateUserService:
+    App\Services\UserServices\LoginUserService:
     App\Services\ProfilServices\CreateProfilService:
     App\Services\ProfilServices\ListProfilService: 
-    App\Services\AdminService\ListAdminService: 
+    App\Services\AdminService\ListAdminService:
     App\Services\MailerController:
         arguments:
           - '@mailer'
