@@ -18,13 +18,13 @@ class ProfilAdmin
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    #[Groups(['Admin:read','ProfilAdmin:read'])]
+    #[Groups(['Admin:read','ProfilAdmin:read','History:read'])]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=50,unique=true)
      */
-    #[Groups(['Admin:read','ProfilAdmin:read'])]
+    #[Groups(['Admin:read','ProfilAdmin:read','History:read'])]
     private $libelle;
 
     /**

@@ -24,13 +24,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\Column(type="uuid",unique=true)
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=false)
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $email;
 
     /**
@@ -48,13 +48,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $address;
 
     /**
@@ -72,13 +72,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $lastname;
 
     /**
@@ -140,7 +140,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\ManyToOne(targetEntity=ProfilAdmin::class, inversedBy="users",cascade={"persist"})
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read'])]
     private $profilId;
 
     /**

@@ -43,7 +43,17 @@ class ListHistoryService
         $histories = $this->historyRepository->findAll();
         $json = $this->serializer->serialize(["list" => $histories], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
-        ], ['groups' => 'User:read']));
+        ], ['groups' => 'History:read']));
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+       // return $history;
+    }
+
+    public function listHistoryByUser($id):JsonResponse
+    {
+        $histories = $this->historyRepository->findBy(['userId' => $id]);
+        $json = $this->serializer->serialize(["list" => $histories], 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'History1:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
        // return $history;
     }

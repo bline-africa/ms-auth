@@ -7,6 +7,7 @@ use App\Services\UserServices\ProviderInfoService;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -28,6 +29,15 @@ class HistoryController extends AbstractController
     {
        // dd("ok");
         return $historyService->listHistory();
+    }
+
+    #[Route('/api/user/history_by_user', name: 'history_user', methods: "POST")]
+    public function getUserInfoByUser(Request $request,ListHistoryService $historyService):JsonResponse
+    {
+        $content = $request->getContent();
+        $json = json_decode($content);
+        //dd($json);
+        return $historyService->listHistoryByUser($json->id);
     }
 
     

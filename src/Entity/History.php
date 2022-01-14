@@ -16,10 +16,10 @@ class History
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    #[Groups('User:read')]
+    #[Groups(['History:read','History1:read'])]
     private $id;
 
-    #[Groups('User:read')]
+    #[Groups(['History:read','History1:read'])]
     /**
      * @ORM\Column(type="string", length=25)
      */
@@ -28,25 +28,25 @@ class History
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    #[Groups('User:read')]
+    #[Groups(['History:read','History1:read'])]
     private $latitude;
 
     /**
      * @ORM\Column(type="string", length=25, nullable=true)
      */
-    #[Groups('User:read')]
+    #[Groups(['History:read','History1:read'])]
     private $longitude;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="histories")
      */
-    #[Groups('User:read')]
+    #[Groups('History:read')]
     private $userId;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    #[Groups('User:read')]
+    #[Groups(['History:read','History1:read'])]
     private $date_connect;
 
     public function getId(): ?int
