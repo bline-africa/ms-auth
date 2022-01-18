@@ -195,7 +195,8 @@ class ApiLoginController extends AbstractController
     function loginOpenId(
         Request $request,
         SerializerInterface $serializer,
-        CreateUserService $userService
+        CreateUserService $userService,
+        CreateHistoryService $historiqueService
     ): JsonResponse {
         $content = $request->getContent();
         $parsed = json_decode($content);
@@ -218,9 +219,10 @@ class ApiLoginController extends AbstractController
         $user->setAccountType($accountType);
         $user->setAccountId($accountId);
         $user->setMustChangePassword(false);
+        $user->setLastConnect(new DateTimeImmutable());
 
-
-        return $userService->openId($user, $profilId);
+        $history = $historiqueService->addHistory($user);
+        return $userService->openId($user, $profilId,$history);
     }
 
     /**

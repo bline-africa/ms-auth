@@ -158,19 +158,19 @@ class CreateUserService
         if ($userMail) {
             $userVerif = $userMail;
         }
-         if (!$userVerif->getIsvalid()) {
-             return new JsonResponse([
+        if (!$userVerif->getIsvalid()) {
+            return new JsonResponse([
                 'message' => 'You need valid your account first, account not activated yet !'
             ], Response::HTTP_UNAUTHORIZED);
         }
-       // dd($user);
-       $userVerif->setLastConnect($user->getLastConnect());
-       $userVerif->setLatitude($user->getLatitude());
-       $userVerif->setLongitude($user->getLongitude());
-       $userVerif->setAddressIp($user->getAddressIp());
+        // dd($user);
+        $userVerif->setLastConnect($user->getLastConnect());
+        $userVerif->setLatitude($user->getLatitude());
+        $userVerif->setLongitude($user->getLongitude());
+        $userVerif->setAddressIp($user->getAddressIp());
         $history = $historiqueService->addHistory($userVerif);
-        
-        
+
+
         //dd($user);
         $this->em->persist($userVerif);
         $this->em->flush();
@@ -237,7 +237,7 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
-    public function openId(User $user, int $idProfil)
+    public function openId(User $user, int $idProfil,$historiqueService)
     {
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
@@ -253,7 +253,7 @@ class CreateUserService
             return new JsonResponse(["message" => "profil not exists"], Response::HTTP_METHOD_NOT_ALLOWED);
         }
         // dd("");
-        $verifUser = $this->userRepository->findOneBy(["accountId" => $user->getAccountId(), "account_type" => $user->getAccountType(),"profilId" => $verifProfil]);
+        $verifUser = $this->userRepository->findOneBy(["accountId" => $user->getAccountId(), "account_type" => $user->getAccountType(), "profilId" => $verifProfil]);
         if ($verifUser == null) {
             $verifUser = $user;
         }
@@ -274,7 +274,11 @@ class CreateUserService
             }
             return new JsonResponse(["message" => $messages], Response::HTTP_BAD_REQUEST);
         }
-
+        $verifUser->setLastConnect($user->getLastConnect());
+        $verifUser->setLatitude($user->getLatitude());
+        $verifUser->setLongitude($user->getLongitude());
+        $verifUser->setAddressIp($user->getAddressIp());
+        $history = $historiqueService->addHistory($verifUser);
         try {
             $this->em->persist($verifUser);
             $this->em->flush();
@@ -282,7 +286,7 @@ class CreateUserService
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
 
-        $json = $this->serializer->serialize(["user" => $verifUser, "token" => $this->jwt->create($verifUser)], 'json', array_merge([
+        $json = $this->serializer->serialize(["user" => $verifUser, "token" => $this->jwt->create($verifUser),'history' => $history], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
@@ -291,7 +295,7 @@ class CreateUserService
 
     public function validateUser($id, $code)
     {
-      //  dd($id);
+        //  dd($id);
         $user = $this->userRepository->findOneBy(["id" => $id, "isvalid" => false]);
         if ($user == null) {
             return new JsonResponse(["message" => "user not found or account already valid"], Response::HTTP_NOT_FOUND);
