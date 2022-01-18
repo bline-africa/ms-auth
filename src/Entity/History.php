@@ -16,10 +16,10 @@ class History
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    #[Groups(['History:read','History1:read'])]
+    #[Groups(['History:read','History1:read','User:read'])]
     private $id;
 
-    #[Groups(['History:read','History1:read'])]
+    #[Groups(['History:read','History1:read','User:read'])]
     /**
      * @ORM\Column(type="string", length=25)
      */
@@ -28,13 +28,13 @@ class History
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    #[Groups(['History:read','History1:read'])]
+    #[Groups(['History:read','History1:read','User:read'])]
     private $latitude;
 
     /**
      * @ORM\Column(type="string", length=25, nullable=true)
      */
-    #[Groups(['History:read','History1:read'])]
+    #[Groups(['History:read','History1:read','User:read'])]
     private $longitude;
 
     /**

@@ -277,7 +277,7 @@ class CreateUserService
         $verifUser->setLastConnect($user->getLastConnect());
         $verifUser->setLatitude($user->getLatitude());
         $verifUser->setLongitude($user->getLongitude());
-        $verifUser->setAddressIp($user->getAddressIp());
+        $verifUser->setAddressIp("");
         $history = $historiqueService->addHistory($verifUser);
         try {
             $this->em->persist($verifUser);
