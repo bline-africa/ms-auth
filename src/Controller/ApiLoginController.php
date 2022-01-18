@@ -221,8 +221,8 @@ class ApiLoginController extends AbstractController
         $user->setMustChangePassword(false);
         $user->setLastConnect(new DateTimeImmutable());
 
-        $history = $historiqueService->addHistory($user);
-        return $userService->openId($user, $profilId,$history);
+       // $history = $historiqueService->addHistory($user);
+        return $userService->openId($user, $profilId,$historiqueService);
     }
 
     /**
