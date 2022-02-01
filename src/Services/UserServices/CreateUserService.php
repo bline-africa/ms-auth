@@ -152,9 +152,9 @@ class CreateUserService
         if ($verifProfil == null) {
             return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
         }
-        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), "profilId" => $verifProfil]);
-        $userMail = $this->userRepository->findOneBy(["email" => $user->getEmail(), "profilId" => $verifProfil]);
-        //dd($userMail);
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier()]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getEmail()]);
+       // dd($userVerif);
         if ($userMail) {
             $userVerif = $userMail;
         }
@@ -168,6 +168,7 @@ class CreateUserService
         $userVerif->setLatitude($user->getLatitude());
         $userVerif->setLongitude($user->getLongitude());
         $userVerif->setAddressIp($user->getAddressIp());
+        $userVerif->setProfilId($verifProfil);
         $history = $historiqueService->addHistory($userVerif);
 
 

@@ -152,8 +152,8 @@ class ApiLoginController extends AbstractController
         $idProfil = json_decode($content)->profilId;
         $user = $serializer->deserialize($content, User::class, 'json');
         $user->setLastConnect(new DateTimeImmutable());
-        $history = $historiqueService->addHistory($user);
-        return $userService->loginUser($user, $idProfil, $history);
+      //  $history = $historiqueService->addHistory($user,$idProfil);
+        return $userService->loginUser($user, $idProfil, $historiqueService);
     }
 
     /**
