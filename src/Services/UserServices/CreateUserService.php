@@ -159,9 +159,9 @@ class CreateUserService
             $userVerif = $userMail;
         }
         if (!$userVerif->getIsvalid()) {
-            return new JsonResponse([
+           /* return new JsonResponse([
                 'message' => 'You need valid your account first, account not activated yet !'
-            ], Response::HTTP_UNAUTHORIZED);
+            ], Response::HTTP_UNAUTHORIZED);*/
         }
         // dd($user);
         $userVerif->setLastConnect($user->getLastConnect());
