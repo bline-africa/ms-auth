@@ -140,7 +140,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\ManyToOne(targetEntity=ProfilAdmin::class, inversedBy="users",cascade={"persist"})
      */
-    #[Groups(['User:read','History:read'])]
+    #[Groups(['History:read','User:read'])]
     private $profilId;
 
     /**
