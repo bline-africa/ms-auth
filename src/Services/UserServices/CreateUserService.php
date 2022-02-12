@@ -288,7 +288,7 @@ class CreateUserService
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
 
-        $json = $this->serializer->serialize(["user" => $verifUser, "token" => $this->jwt->create($verifUser),'history' => $history], 'json', array_merge([
+        $json = $this->serializer->serialize(["user" => $verifUser, "token" => $this->jwt->create($verifUser)], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
