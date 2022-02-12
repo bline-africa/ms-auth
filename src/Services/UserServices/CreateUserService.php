@@ -280,7 +280,7 @@ class CreateUserService
         $verifUser->setLongitude($user->getLongitude());
         $verifUser->setAddressIp("");
         $verifUser->setProfilId($verifProfil);
-        $history = $historiqueService->addHistory($verifUser);
+        //$history = $historiqueService->addHistory($verifUser);
         try {
             $this->em->persist($verifUser);
             $this->em->flush();
