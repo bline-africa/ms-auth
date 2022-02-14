@@ -68,14 +68,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findByType($role = "ROLE_PROVIDER")
     {
         
-        
         return $query = $this->getEntityManager()
             ->getConnection()
             ->executeQuery(
                 <<<'SQL'
             SELECT id,lastname,firstname,username,email,isvalid,is_kyc_check,account_type,title,fax,company_name,address,phone1,phone2,last_connect,title,fax,tva FROM public.user
             WHERE roles::jsonb ?? :role
-            ORDER BY lastname, firstname
+            ORDER BY created_at desc
 SQL,
                 ['role' => $role]
             )->fetchAllAssociative();
