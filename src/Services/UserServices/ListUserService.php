@@ -81,7 +81,7 @@ class ListUserService
 
     public function listProviderUuid(): JsonResponse
     {
-        $list = $this->userRepository->findByType("ROLE_PROVIDER");
+        $list = $this->userRepository->findUuidByType("ROLE_PROVIDER");
         
        // dd($list);
         $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
