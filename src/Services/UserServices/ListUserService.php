@@ -78,4 +78,16 @@ class ListUserService
         return new JsonResponse($json, Response::HTTP_OK, [], true);
         
     }
+
+    public function listProviderUuid(): JsonResponse
+    {
+        $list = $this->userRepository->findByType("ROLE_PROVIDER");
+        
+       // dd($list);
+        $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'UserUuid:read']));
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        
+    }
 }

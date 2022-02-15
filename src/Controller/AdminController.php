@@ -39,5 +39,11 @@ class AdminController extends AbstractController
     {
         return $listUserService->listProvider();
     }
+
+    #[Route('/api/provider/list_uuid', name: 'list_provider_uuid')]
+    public function listProviderUuid(ListUserService $listUserService): JsonResponse
+    {
+        return $listUserService->listProviderUuid();
+    }
    
 }

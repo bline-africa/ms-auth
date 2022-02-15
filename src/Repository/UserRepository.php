@@ -79,4 +79,19 @@ SQL,
                 ['role' => $role]
             )->fetchAllAssociative();
     }
+
+    public function findUuidByType($role = "ROLE_PROVIDER")
+    {
+        
+        return $query = $this->getEntityManager()
+            ->getConnection()
+            ->executeQuery(
+                <<<'SQL'
+            SELECT id FROM public.user
+            WHERE roles::jsonb ?? :role
+            ORDER BY created_at desc
+SQL,
+                ['role' => $role]
+            )->fetchAllAssociative();
+    }
 }
