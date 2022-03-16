@@ -245,7 +245,7 @@ class CreateUserService
         } catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        if (strtoupper($user->getAccountType()) != "FACEBOOK" && strtoupper($user->getAccountType())  != "GOOGLE") {
+        if (strtoupper($user->getAccountType()) != "FACEBOOK" && strtoupper($user->getAccountType())  != "GOOGLE" && strtoupper($user->getAccountType())  != "APPLE") {
             return new JsonResponse(["message" => "account type not found"], Response::HTTP_NOT_FOUND);
         }
         //  dd($verifProfil);
