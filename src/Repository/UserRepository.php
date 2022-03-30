@@ -67,7 +67,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findByType($role = "ROLE_PROVIDER")
     {
-        
+
         return $query = $this->getEntityManager()
             ->getConnection()
             ->executeQuery(
@@ -82,7 +82,7 @@ SQL,
 
     public function findUuidByType($role = "ROLE_PROVIDER")
     {
-        
+
         return $query = $this->getEntityManager()
             ->getConnection()
             ->executeQuery(
@@ -93,5 +93,14 @@ SQL,
 SQL,
                 ['role' => $role]
             )->fetchAllAssociative();
+    }
+
+    public function deleteAllUsers()
+    {
+        $query = $this->createQueryBuilder('e')
+            ->delete()
+            ->getQuery()
+            ->execute();
+        return $query;
     }
 }

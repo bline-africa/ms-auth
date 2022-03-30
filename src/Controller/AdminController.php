@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Services\AdminServices\ListAdminService;
+use App\Services\UserServices\CreateUserService;
 use App\Services\UserServices\ListUserService;
 use App\Services\UserServices\ProviderInfoService;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -44,6 +45,12 @@ class AdminController extends AbstractController
     public function listProviderUuid(ListUserService $listUserService): JsonResponse
     {
         return $listUserService->listProviderUuid();
+    }
+
+    #[Route('/api/user/delete_all', name: 'delete_all_users')]
+    public function deleteAllUsers(CreateUserService $createUserService): JsonResponse
+    {
+        return $createUserService->deleteAllUsers();
     }
    
 }
