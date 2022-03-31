@@ -303,7 +303,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getSalt(): ?string
     {
-        return null;
+        return $this->getId();
     }
 
     /**
