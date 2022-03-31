@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Admin;
 use App\Repository\AdminRepository;
 use App\Services\AdminServices\ListAdminService;
+use App\Services\UserServices\CreateUserService;
 use App\Services\UserServices\ListUserService;
 use App\Services\UserServices\ProviderInfoService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,6 +53,7 @@ class AdminController extends AbstractController
         return $listUserService->listProviderUuid();
     }
 
+
     #[Route('/api/admin/info', name: 'admin_info_edit', methods: "PUT")]
     public function editAdminInfo(Request $request, UserInterface $userInt, SerializerInterface $serializer,
         AdminRepository $adminRepository, EntityManagerInterface $em): JsonResponse
@@ -59,7 +61,7 @@ class AdminController extends AbstractController
         $req = $request->getContent();
         $reqUser = $serializer->deserialize($req, Admin::class, 'json');
         try {
-           $user =  $adminRepository->findOneBy(['id' => $userInt->getSalt()]);
+            $user = $adminRepository->findOneBy(['id' => $userInt->getSalt()]);
             if (!is_null($reqUser->getLastname())) $user->setLastname($reqUser->getLastname());
             if (!is_null($reqUser->getFirstname())) $user->setFirstname($reqUser->getFirstname());
             if (!is_null($reqUser->getEmail())) $user->setEmail($reqUser->getEmail());
@@ -77,6 +79,12 @@ class AdminController extends AbstractController
                 'message' => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    #[Route('/api/user/delete_all', name: 'delete_all_users')]
+    public function deleteAllUsers(CreateUserService $createUserService): JsonResponse
+    {
+        return $createUserService->deleteAllUsers();
     }
    
 }

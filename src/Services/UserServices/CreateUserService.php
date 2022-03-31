@@ -61,6 +61,7 @@ class CreateUserService
         $this->jwt = $jwt;
         $this->serializer = $serializer;
         $this->userRepository = $userRepository;
+        $this->historyRepository = $historyRepository;
     }
     public function createFirstAdmin(Admin $admin): JsonResponse
     {
@@ -327,5 +328,14 @@ class CreateUserService
         ], ['groups' => 'User:read']));
         //dd($json);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    public function deleteAllUsers()
+    {
+        $this->historyRepository->deleteAllHistories();
+        $this->userRepository->deleteAllUsers();
+        $this->em->flush();
+
+        return new JsonResponse(["message" => "ok"], Response::HTTP_OK);
     }
 }

@@ -47,4 +47,13 @@ class HistoryRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function deleteAllHistories()
+    {
+        $query = $this->createQueryBuilder('e')
+            ->delete()
+            ->getQuery()
+            ->execute();
+        return $query;
+    }
 }
