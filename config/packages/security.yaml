@@ -33,6 +33,12 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        refresh:
+            pattern:  ^/api/token/refresh
+            stateless: true
+            anonymous: true
+            
         admin_login:
             pattern: ^/api/login_admin
             stateless: true
@@ -61,6 +67,7 @@ security:
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
+
         main:
             anonymous: true
             #lazy: true

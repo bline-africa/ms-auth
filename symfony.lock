@@ -105,14 +105,11 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
+    "gesdinet/jwt-refresh-token-bundle": {
+        "version": "v1.0.1"
+    },
     "laminas/laminas-code": {
         "version": "3.4.1"
-    },
-    "laminas/laminas-eventmanager": {
-        "version": "3.4.0"
-    },
-    "laminas/laminas-zendframework-bridge": {
-        "version": "1.4.0"
     },
     "lcobucci/clock": {
         "version": "2.1.0"
