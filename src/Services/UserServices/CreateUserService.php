@@ -338,4 +338,20 @@ class CreateUserService
 
         return new JsonResponse(["message" => "ok"], Response::HTTP_OK);
     }
+    public function deleteUser($uuid)
+    {
+        $user = $this->userRepository->findOneBy(['id' => $uuid]);
+        if($user){
+            $histories = $this->historyRepository->findBy(['userId' => $user->getId()]);
+            
+            foreach ($histories as $historie ) {
+                $this->em->remove($historie);
+            }
+            $this->em->remove($user);
+        }
+        
+        $this->em->flush();
+
+        return new JsonResponse(["message" => "Suppression ok"], Response::HTTP_OK);
+    }
 }

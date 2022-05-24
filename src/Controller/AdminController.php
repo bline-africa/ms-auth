@@ -86,5 +86,13 @@ class AdminController extends AbstractController
     {
         return $createUserService->deleteAllUsers();
     }
+
+    #[Route('/api/user/delete_user', name: 'delete_user')]
+    public function deleteUser(Request $request,CreateUserService $createUserService): JsonResponse
+    {
+        $req = $request->getContent();
+        $id = json_decode($req)->id;
+        return $createUserService->deleteUser($id);
+    }
    
 }
