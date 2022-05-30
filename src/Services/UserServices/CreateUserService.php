@@ -153,16 +153,25 @@ class CreateUserService
         if ($verifProfil == null) {
             return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
         }
-        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier()]);
-        $userMail = $this->userRepository->findOneBy(["email" => $user->getEmail()]);
-       // dd($userVerif);
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(),'profilId' => $idProfil]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(),'profilId' => $idProfil]);
+        
         if ($userMail) {
             $userVerif = $userMail;
         }
+        if($userVerif == null){
+            return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+        }
+        //dd($userVerif);
+       $verifPassword =  $this->hasher->isPasswordValid($userVerif,$user->getPassword());
+        //dd($verifPassword);
+        if(!$verifPassword){
+            return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+        }
         if (!$userVerif->getIsvalid()) {
-           /* return new JsonResponse([
+            return new JsonResponse([
                 'message' => 'You need valid your account first, account not activated yet !'
-            ], Response::HTTP_UNAUTHORIZED);*/
+            ], Response::HTTP_UNAUTHORIZED);
         }
         // dd($user);
         $userVerif->setLastConnect($user->getLastConnect());
