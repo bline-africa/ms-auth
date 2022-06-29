@@ -159,8 +159,8 @@ class CreateUserService
         if ($verifProfil == null) {
             return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
         }
-        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(),'profilId' => $idProfil,'deleted' => false]);
-        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(),'profilId' => $idProfil,'deleted' => false]);
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(),'profilId' => $idProfil]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(),'profilId' => $idProfil]);
         
         if ($userMail) {
             $userVerif = $userMail;
@@ -177,6 +177,11 @@ class CreateUserService
         if (!$userVerif->getIsvalid()) {
             return new JsonResponse([
                 'message' => 'You need valid your account first, account not activated yet !'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+        if($userVerif->getDeleted() == true ){
+            return new JsonResponse([
+                'message' => 'Account deleted'
             ], Response::HTTP_UNAUTHORIZED);
         }
         // dd($user);
@@ -388,7 +393,7 @@ class CreateUserService
         if(!$find){
             return new JsonResponse(["message" => "Request not found"], Response::HTTP_NOT_FOUND);
         }
-        $this->deleteAccount($find->getId(),true);
+        $this->deleteAccount($find->getUserId(),true);
         $find->setIsDone(true);
         $this->em->persist($find);
         $this->em->flush();

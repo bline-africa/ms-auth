@@ -118,11 +118,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
+    #[Groups('User:read')]
     private $deleted;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
+    #[Groups('User:read')]
     private $deletedAt;
 
     /**

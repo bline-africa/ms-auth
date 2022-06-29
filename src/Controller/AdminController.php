@@ -123,15 +123,8 @@ class AdminController extends AbstractController
     #[Route('/api/user/list_delete_request', name: 'list_delete_request', methods: "GET")]
     public function listDeleteRequest(Request $request,CreateUserService $createUserService): JsonResponse
     {
-        $req = $request->getContent();
-        $id = json_decode($req)->id;
-        $user_name = json_decode($req)->name;
-        //$date_request = json_decode($req)->date_request;
-        $request = new DeleteRequests();
-        $request->setUserName($user_name);
-        $request->setUserId(Uuid::fromString($id));
-        $request->setDateRequest(new DateTime());
-        return $createUserService->deleteRequest($request);
+        
+        return $createUserService->listDeleteRequest();
     }
 
    
