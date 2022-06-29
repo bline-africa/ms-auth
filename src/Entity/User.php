@@ -234,6 +234,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('User:read')]
     private $passwordCode;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dataDeleted;
+
     
 
    
@@ -774,6 +784,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPasswordCode(?string $passwordCode): self
     {
         $this->passwordCode = $passwordCode;
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getDataDeleted(): ?\DateTimeInterface
+    {
+        return $this->dataDeleted;
+    }
+
+    public function setDataDeleted(?\DateTimeInterface $dataDeleted): self
+    {
+        $this->dataDeleted = $dataDeleted;
 
         return $this;
     }

@@ -3,14 +3,17 @@
 namespace App\Services\UserServices;
 
 use App\Entity\Admin;
+use App\Entity\DeleteRequests;
 use App\Entity\History;
 use App\Entity\ProfilAdmin;
 use App\Entity\User;
 use App\Repository\AdminRepository;
+use App\Repository\DeleteRequestsRepository;
 use App\Repository\HistoryRepository;
 use App\Repository\ProfilAdminRepository;
 use App\Repository\UserRepository;
 use App\Services\HistoryServices\CreateHistoryService;
+use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -41,6 +44,7 @@ class CreateUserService
     private $serializer;
     private $userRepository;
     private $historyRepository;
+    private $deleteRequestRepository;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -51,7 +55,8 @@ class CreateUserService
         JWTTokenManagerInterface $jwt,
         SerializerInterface $serializer,
         UserRepository $userRepository,
-        HistoryRepository $historyRepository
+        HistoryRepository $historyRepository,
+        DeleteRequestsRepository $deleteRequestRepository,
     ) {
         $this->em = $em;
         $this->adminRepository = $adminRepository;
@@ -62,6 +67,7 @@ class CreateUserService
         $this->serializer = $serializer;
         $this->userRepository = $userRepository;
         $this->historyRepository = $historyRepository;
+        $this->deleteRequestRepository = $deleteRequestRepository;
     }
     public function createFirstAdmin(Admin $admin): JsonResponse
     {
@@ -153,8 +159,8 @@ class CreateUserService
         if ($verifProfil == null) {
             return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
         }
-        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(),'profilId' => $idProfil]);
-        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(),'profilId' => $idProfil]);
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(),'profilId' => $idProfil,'deleted' => false]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(),'profilId' => $idProfil,'deleted' => false]);
         
         if ($userMail) {
             $userVerif = $userMail;
@@ -362,5 +368,65 @@ class CreateUserService
         $this->em->flush();
 
         return new JsonResponse(["message" => "Suppression ok"], Response::HTTP_OK);
+    }
+
+    public function deleteRequest(DeleteRequests $deleteRequests)
+    {
+        $find = $this->userRepository->findOneBy(['id' => $deleteRequests->getUserId()]);
+        if(!$find){
+            return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
+        }
+        $this->em->persist($deleteRequests);
+        $this->em->flush();
+
+        return new JsonResponse(["message" => "Saved successfully"], Response::HTTP_CREATED);
+    }
+
+    public function confirmDeleteRequest($id)
+    {
+        $find = $this->deleteRequestRepository->findOneBy(['id' => $id]);
+        if(!$find){
+            return new JsonResponse(["message" => "Request not found"], Response::HTTP_NOT_FOUND);
+        }
+        $this->deleteAccount($find->getId(),true);
+        $find->setIsDone(true);
+        $this->em->persist($find);
+        $this->em->flush();
+
+        return new JsonResponse(["message" => "updated successfully"], Response::HTTP_CREATED);
+    }
+
+    public function deleteAccount($id,$local = false)
+    {
+        $find = $this->userRepository->findOneBy(['id' => $id]);
+        if(!$find){
+            if($local){
+                return ['message' => 'user not found'];
+            }else{
+                return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+            }
+           
+        }
+        $find->setDeleted(true);
+        $find->setDataDeleted(new DateTime());
+
+        $this->em->persist($find);
+        $this->em->flush();
+
+        if($local){
+            return ['message' => 'user deleted successfully'];
+        }else{
+            return new JsonResponse(["message" => "deleted successfully"], Response::HTTP_OK);
+        }
+    }
+
+    public function listDeleteRequest()
+    {
+        $list = $this->deleteRequestRepository->findAll();
+        $json = $this->serializer->serialize($list, 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

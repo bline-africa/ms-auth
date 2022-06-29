@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Admin;
+use App\Entity\DeleteRequests;
 use App\Repository\AdminRepository;
 use App\Services\AdminServices\ListAdminService;
 use App\Services\UserServices\CreateUserService;
 use App\Services\UserServices\ListUserService;
 use App\Services\UserServices\ProviderInfoService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\Method;
@@ -19,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
-
+use Symfony\Component\Uid\Uuid;
 
 class AdminController extends AbstractController
 {
@@ -94,5 +96,43 @@ class AdminController extends AbstractController
         $id = json_decode($req)->id;
         return $createUserService->deleteUser($id);
     }
+
+    #[Route('/api/user/request_account_delete', name: 'request_account_delete', methods: "POST")]
+    public function request_account_delete(Request $request,CreateUserService $createUserService): JsonResponse
+    {
+        $req = $request->getContent();
+        $id = json_decode($req)->id;
+        $user_name = json_decode($req)->name;
+        //$date_request = json_decode($req)->date_request;
+        $request = new DeleteRequests();
+        $request->setUserName($user_name);
+        $request->setUserId(Uuid::fromString($id));
+        $request->setDateRequest(new DateTime());
+        return $createUserService->deleteRequest($request);
+    }
+
+    #[Route('/api/user/confirm_delete_request', name: 'confirm_delete_request', methods: "POST")]
+    public function confirmRequestDelete(Request $request,CreateUserService $createUserService): JsonResponse
+    {
+        $req = $request->getContent();
+        $id = json_decode($req)->id;
+        
+        return $createUserService->confirmDeleteRequest($id);
+    }
+
+    #[Route('/api/user/list_delete_request', name: 'list_delete_request', methods: "GET")]
+    public function listDeleteRequest(Request $request,CreateUserService $createUserService): JsonResponse
+    {
+        $req = $request->getContent();
+        $id = json_decode($req)->id;
+        $user_name = json_decode($req)->name;
+        //$date_request = json_decode($req)->date_request;
+        $request = new DeleteRequests();
+        $request->setUserName($user_name);
+        $request->setUserId(Uuid::fromString($id));
+        $request->setDateRequest(new DateTime());
+        return $createUserService->deleteRequest($request);
+    }
+
    
 }
