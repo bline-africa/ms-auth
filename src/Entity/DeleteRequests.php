@@ -43,6 +43,12 @@ class DeleteRequests
     #[Groups('User:read')]
     private $isDone;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    #[Groups('User:read')]
+    private $motif;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +98,18 @@ class DeleteRequests
     public function setIsDone(?bool $isDone): self
     {
         $this->isDone = $isDone;
+
+        return $this;
+    }
+
+    public function getMotif(): ?string
+    {
+        return $this->motif;
+    }
+
+    public function setMotif(?string $motif): self
+    {
+        $this->motif = $motif;
 
         return $this;
     }

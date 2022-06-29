@@ -106,8 +106,10 @@ class AdminController extends AbstractController
         //$date_request = json_decode($req)->date_request;
         $request = new DeleteRequests();
         $request->setUserName($user_name);
+        $motif = json_decode($req)->motif;
         $request->setUserId(Uuid::fromString($id));
         $request->setDateRequest(new DateTime());
+        $request->setMotif($motif);
         return $createUserService->deleteRequest($request);
     }
 
