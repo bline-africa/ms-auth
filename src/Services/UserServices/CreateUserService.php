@@ -175,9 +175,9 @@ class CreateUserService
             return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
         }
         if (!$userVerif->getIsvalid()) {
-            return new JsonResponse([
+           /* return new JsonResponse([
                 'message' => 'You need valid your account first, account not activated yet !'
-            ], Response::HTTP_UNAUTHORIZED);
+            ], Response::HTTP_UNAUTHORIZED);*/
         }
         if($userVerif->getDeleted() == true ){
             return new JsonResponse([
