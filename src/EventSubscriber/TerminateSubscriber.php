@@ -20,7 +20,9 @@ use App\Repository\DemandeRepository;
 use App\Repository\UserRepository;
 use App\Repository\DevisRepository;
 use App\Repository\FactureRepository;
+use App\Repository\ProfilAdminRepository;
 use App\Repository\TransactionRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class TerminateSubscriber implements EventSubscriberInterface
@@ -33,16 +35,21 @@ class TerminateSubscriber implements EventSubscriberInterface
     private $devisRepository;
     private $factureRepository;
     private $transactionRepository;
+    private $profileRepository;
+    private $logger;
     public function __construct(
         MailerController $mailer,
         SerializerInterface $serializer,
-        Environment $twig
-        
+        Environment $twig,
+        ProfilAdminRepository $profilAdminRepository,
+        LoggerInterface $logger,
+
     ) {
         $this->mailer = $mailer;
         $this->serializer = $serializer;
         $this->twig = $twig;
-    
+        $this->profileRepository = $profilAdminRepository;
+        $this->logger = $logger;
     }
     public static function getSubscribedEvents()
     {
@@ -50,9 +57,9 @@ class TerminateSubscriber implements EventSubscriberInterface
         return [
             KernelEvents::TERMINATE => [
                 ['terminateProcess', 10]
-            ] ,
+            ],
             KernelEvents::RESPONSE => [
-                ['customResponse',0],
+                ['customResponse', 0],
             ],
         ];
     }
@@ -60,24 +67,24 @@ class TerminateSubscriber implements EventSubscriberInterface
     {
         if ($event->getRequest()->getMethod() === 'OPTIONS') {
             $event->setResponse(
-                    new Response('', 204, [
-                        'Access-Control-Allow-Origin' => '*',
-                        'Access-Control-Allow-Credentials' => 'true',
-                        'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
-                        'Access-Control-Allow-Headers' => 'DNT, X-User-Token, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type',
-                        'Access-Control-Max-Age' => 1728000,
-                        'Content-Type' => 'text/plain charset=UTF-8',
-                        'Content-Length' => 0
-                    ])
-                );
-            return ;
+                new Response('', 204, [
+                    'Access-Control-Allow-Origin' => '*',
+                    'Access-Control-Allow-Credentials' => 'true',
+                    'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+                    'Access-Control-Allow-Headers' => 'DNT, X-User-Token, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type',
+                    'Access-Control-Max-Age' => 1728000,
+                    'Content-Type' => 'text/plain charset=UTF-8',
+                    'Content-Length' => 0
+                ])
+            );
+            return;
         }
         $response = $event->getResponse();
         $response->headers->set('Content-Type', 'application/json');
         $response->setContent($response->getContent());
-       // dd($response);
+        // dd($response);
         //$response->header->set("message","fd");
-    
+
         $response->setStatusCode($response->getStatusCode());
         $event->setResponse($response);
     }
@@ -93,31 +100,49 @@ class TerminateSubscriber implements EventSubscriberInterface
         $method = $request->getMethod();
         $error = "";
         $abonne = new User();
-       
+
 
         $recipient = "antoine03kaboome@gmail.com";
 
 
         //mail à envoyer pour la validation du compe abonné
         if (($uri == "/api/create/user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_CREATED) ||
-        ($uri == "/api/user/send_code" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK)) {
+            ($uri == "/api/user/send_code" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK)
+        ) {
             try {
                 $user = $this->serializer->deserialize($resContent, User::class, 'json');
                 $recipient = $user->getEmail();
+                $lang = json_decode($content)->lang;
+               $this->logger->info("langResult : ".$lang);
+                $profil = $this->profileRepository->findOneBy(['id' => json_decode($content)->profilId]);
+                $template = 'account_validation.html.twig';
+                if (strtoupper($profil->getLibelle()) == "PROVIDER") {
+                    if ($lang == 'en') {
+                        $template = 'account_validation_provider_en.html.twig';
+                    } else {
+                        $template = 'account_validation_provider.html.twig';
+                    }
+                } else {
+                    if ($lang == 'en') {
+                        $template = 'account_validation_en.html.twig';
+                    } else {
+                        $template = 'account_validation.html.twig';
+                    }
+                }
                 //  $abonne->getCodeR
             } catch (Exception $ex) {
                 $error = $ex->getMessage();
             }
             //$random = random_int(1, 10);
-            $random = rand(10000,99999);
-            $content = $this->twig->render('account_validation.html.twig', [
+            $random = rand(10000, 99999);
+            $content = $this->twig->render($template, [
                 'user' => $user,
                 "logo" => $request->getSchemeAndHttpHost() . "/images/logo_bline.png",
                 //'code_recu' => $random
             ]);
             $this->mailer->sendEmail("Validate account", $content, $recipient);
         }
-        if($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK){
+        if ($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
             try {
                 $user = $this->serializer->deserialize($resContent, User::class, 'json');
                 $recipient = $user->getEmail();
@@ -132,7 +157,5 @@ class TerminateSubscriber implements EventSubscriberInterface
             ]);
             $this->mailer->sendEmail("Password update", $content, $recipient);
         }
-        
-       
     }
 }
