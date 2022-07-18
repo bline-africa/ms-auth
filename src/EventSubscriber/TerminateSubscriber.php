@@ -116,16 +116,21 @@ class TerminateSubscriber implements EventSubscriberInterface
                $this->logger->info("langResult : ".$lang);
                 $profil = $this->profileRepository->findOneBy(['id' => json_decode($content)->profilId]);
                 $template = 'account_validation.html.twig';
+                $object = '';
                 if (strtoupper($profil->getLibelle()) == "PROVIDER") {
                     if ($lang == 'en') {
+                        $object = ' Provider account validation';
                         $template = 'account_validation_provider_en.html.twig';
                     } else {
+                        $object = 'Validation de votre compte prestataire';
                         $template = 'account_validation_provider.html.twig';
                     }
                 } else {
                     if ($lang == 'en') {
+                        $object = 'User account validation';
                         $template = 'account_validation_en.html.twig';
                     } else {
+                        $object = 'Validation de votre compte utilisateur';
                         $template = 'account_validation.html.twig';
                     }
                 }
@@ -140,7 +145,7 @@ class TerminateSubscriber implements EventSubscriberInterface
                 "logo" => $request->getSchemeAndHttpHost() . "/images/logo_bline.png",
                 //'code_recu' => $random
             ]);
-            $this->mailer->sendEmail("Validate account", $content, $recipient);
+            $this->mailer->sendEmail($object, $content, $recipient);
         }
         if ($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
             try {
