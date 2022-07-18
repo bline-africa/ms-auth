@@ -374,6 +374,22 @@ class CreateUserService
 
         return new JsonResponse(["message" => "Suppression ok"], Response::HTTP_OK);
     }
+    public function enableDisable($id,$etat)
+    {
+        $user = $this->userRepository->findOneBy(['id' => $id]);
+        if(!$user){
+            return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
+        }
+        $user->setIsvalid($etat);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $json = $this->serializer->serialize($user, 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
 
     public function deleteRequest(DeleteRequests $deleteRequests)
     {

@@ -97,6 +97,15 @@ class AdminController extends AbstractController
         return $createUserService->deleteUser($id);
     }
 
+    #[Route('/api/user/enable_disable', name: 'enable_disable', methods: "POST")]
+    public function enableDisable(Request $request,CreateUserService $createUserService,UserInterface $userInt): JsonResponse
+    {
+        $req = $request->getContent();
+        $id = json_decode($req)->id;
+        $etat = json_decode($req)->etat;
+        return $createUserService->enableDisable($id,$etat);
+    }
+
     #[Route('/api/user/request_account_delete', name: 'request_account_delete', methods: "POST")]
     public function request_account_delete(Request $request,CreateUserService $createUserService): JsonResponse
     {
