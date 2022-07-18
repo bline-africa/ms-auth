@@ -61,7 +61,11 @@ class ListUserService
         $list = $this->userRepository->findByType("ROLE_CUSTOMER");
         
        // dd($list);
-        $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
+       $data = array_filter($list,function($dt){
+        //dd($dt["is_deleted"]);
+        return $dt["is_deleted"] == false;
+    });
+        $json = $this->serializer->serialize(["list" => $data], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -72,7 +76,11 @@ class ListUserService
         $list = $this->userRepository->findByType("ROLE_PROVIDER");
         
        // dd($list);
-        $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
+       $data = array_filter($list,function($dt){
+           //dd($dt["is_deleted"]);
+           return $dt["is_deleted"] == false;
+       });
+        $json = $this->serializer->serialize(["list" => $data], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -84,7 +92,11 @@ class ListUserService
         $list = $this->userRepository->findUuidByType("ROLE_PROVIDER");
         
        // dd($list);
-        $json = $this->serializer->serialize(["list" => $list], 'json', array_merge([
+       $data = array_filter($list,function($dt){
+        //dd($dt["is_deleted"]);
+        return $dt["is_deleted"] == false;
+    });
+        $json = $this->serializer->serialize(["list" => $data], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'UserUuid:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);

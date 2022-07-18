@@ -67,13 +67,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findByType($role = "ROLE_PROVIDER")
     {
-
+$is_deleted = true;
         return $query = $this->getEntityManager()
             ->getConnection()
             ->executeQuery(
                 <<<'SQL'
-            SELECT id,lastname,firstname,username,email,isvalid,is_kyc_check,account_type,title,fax,company_name,address,phone1,phone2,last_connect,title,fax,tva FROM public.user
+            SELECT id,lastname,firstname,username,email,isvalid,is_kyc_check,account_type,title,fax,company_name,address,phone1,phone2,last_connect,title,fax,tva,is_deleted FROM public.user
             WHERE roles::jsonb ?? :role
+             
             ORDER BY created_at desc
 SQL,
                 ['role' => $role]
@@ -82,13 +83,14 @@ SQL,
 
     public function findUuidByType($role = "ROLE_PROVIDER")
     {
-
+        $isdeleted = true;
         return $query = $this->getEntityManager()
             ->getConnection()
             ->executeQuery(
                 <<<'SQL'
             SELECT id FROM public.user
             WHERE roles::jsonb ?? :role
+           
             ORDER BY created_at desc
 SQL,
                 ['role' => $role]
