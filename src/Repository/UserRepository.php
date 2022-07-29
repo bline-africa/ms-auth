@@ -73,11 +73,11 @@ $is_deleted = true;
             ->executeQuery(
                 <<<'SQL'
             SELECT id,lastname,firstname,username,email,isvalid,is_kyc_check,account_type,title,fax,company_name,address,phone1,phone2,last_connect,title,fax,tva,is_deleted FROM public.user
-            WHERE roles  :role
+            WHERE profil_id_id::integer ??  :profil_id
              
             ORDER BY created_at desc
 SQL,
-                ['role' => $role]
+                ['profil_id' => 1]
             )->fetchAllAssociative();
     }
 
