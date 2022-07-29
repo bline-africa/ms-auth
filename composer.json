@@ -15,6 +15,7 @@
         "doctrine/orm": "^2.12",
         "gesdinet/jwt-refresh-token-bundle": "^1.1",
         "lexik/jwt-authentication-bundle": "^2.14",
+        "martin-georgiev/postgresql-for-doctrine": "^1.7",
         "nelmio/cors-bundle": "^2.2",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.2",
