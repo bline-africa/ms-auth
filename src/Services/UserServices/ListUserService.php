@@ -58,7 +58,7 @@ class ListUserService
    
     public function listCustomers(): JsonResponse
     {
-        $list = $this->userRepository->findByType("ROLE_CUSTOMER");
+        $list = $this->userRepository->findByType("ROLE_CUSTOMER",$id = 2);
         
        // dd($list);
        $data = array_filter($list,function($dt){
@@ -73,7 +73,7 @@ class ListUserService
     }
     public function listProvider(): JsonResponse
     {
-        $list = $this->userRepository->findByType("ROLE_PROVIDER");
+        $list = $this->userRepository->findByType("ROLE_PROVIDER",$id = 1);
         
        // dd($list);
        $data = array_filter($list,function($dt){
@@ -89,7 +89,7 @@ class ListUserService
 
     public function listProviderUuid(): JsonResponse
     {
-        $list = $this->userRepository->findUuidByType("ROLE_PROVIDER");
+        $list = $this->userRepository->findUuidByType("ROLE_PROVIDER",$id = 1);
         
        // dd($list);
        $data = array_filter($list,function($dt){
