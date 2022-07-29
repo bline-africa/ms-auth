@@ -77,7 +77,7 @@ $is_deleted = true;
              
             ORDER BY created_at desc
 SQL,
-['profil_id' => 1]
+['profil_id' => 0]
             )->fetchAllAssociative();
     }
 
