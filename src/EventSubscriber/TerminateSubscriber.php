@@ -134,18 +134,20 @@ class TerminateSubscriber implements EventSubscriberInterface
                         $template = 'account_validation.html.twig';
                     }
                 }
+
+                $random = rand(10000, 99999);
+                $content = $this->twig->render($template, [
+                    'user' => $user,
+                    "logo" => $request->getSchemeAndHttpHost() . "/images/logo_bline.png",
+                    //'code_recu' => $random
+                ]);
+                $this->mailer->sendEmail($object, $content, $recipient);
                 //  $abonne->getCodeR
             } catch (Exception $ex) {
                 $error = $ex->getMessage();
             }
             //$random = random_int(1, 10);
-            $random = rand(10000, 99999);
-            $content = $this->twig->render($template, [
-                'user' => $user,
-                "logo" => $request->getSchemeAndHttpHost() . "/images/logo_bline.png",
-                //'code_recu' => $random
-            ]);
-            $this->mailer->sendEmail($object, $content, $recipient);
+           
         }
         if ($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
             try {
