@@ -58,7 +58,8 @@ class ListUserService
    
     public function listCustomers(): JsonResponse
     {
-        $list = $this->userRepository->findByType("ROLE_CUSTOMER",$id = 2);
+        $profil = $this->profilRepository->findOneBy(["libelle" => "customer"]);
+        $list = $this->userRepository->findByType("ROLE_CUSTOMER",$id = $profil->getId());
         
        // dd($list);
        $data = array_filter($list,function($dt){
@@ -73,7 +74,8 @@ class ListUserService
     }
     public function listProvider(): JsonResponse
     {
-        $list = $this->userRepository->findByType("ROLE_PROVIDER",$id = 1);
+        $profil = $this->profilRepository->findOneBy(["libelle" => "provider"]);
+        $list = $this->userRepository->findByType("ROLE_PROVIDER",$id = $profil->getId());
         
        // dd($list);
        $data = array_filter($list,function($dt){
@@ -89,7 +91,9 @@ class ListUserService
 
     public function listProviderUuid(): JsonResponse
     {
-        $list = $this->userRepository->findUuidByType("ROLE_PROVIDER",$id = 1);
+
+        $profil = $this->profilRepository->findOneBy(["libelle" => "provider"]);
+        $list = $this->userRepository->findUuidByType("ROLE_PROVIDER",$id = $profil->getId());
         
        // dd($list);
        $data = array_filter($list,function($dt){
