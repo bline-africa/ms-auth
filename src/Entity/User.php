@@ -247,6 +247,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $dataDeleted;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true,options={"default" : true})
+     */
+    #[Groups('User:read')]
+    private $state;
+
     
 
    
@@ -811,6 +817,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDataDeleted(?\DateTimeInterface $dataDeleted): self
     {
         $this->dataDeleted = $dataDeleted;
+
+        return $this;
+    }
+
+    public function isState(): ?bool
+    {
+        return $this->state;
+    }
+
+    public function getElState()
+    {
+        return $this->state;
+    }
+
+    public function setState(?bool $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }

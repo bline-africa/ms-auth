@@ -159,27 +159,32 @@ class CreateUserService
         if ($verifProfil == null) {
             return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
         }
-        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(),'profilId' => $idProfil]);
-        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(),'profilId' => $idProfil]);
-        
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
+
         if ($userMail) {
             $userVerif = $userMail;
         }
-        if($userVerif == null){
+        if ($userVerif == null) {
             return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
         }
         //dd($userVerif);
-       $verifPassword =  $this->hasher->isPasswordValid($userVerif,$user->getPassword());
+        $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
         //dd($verifPassword);
-        if(!$verifPassword){
+        if (!$verifPassword) {
             return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
         }
         if (!$userVerif->getIsvalid()) {
-           /* return new JsonResponse([
+            /* return new JsonResponse([
                 'message' => 'You need valid your account first, account not activated yet !'
             ], Response::HTTP_UNAUTHORIZED);*/
         }
-        if($userVerif->getDeleted() == true ){
+        if (!$userVerif->isState() ) {
+            return new JsonResponse([
+                'message' => 'Your account is disabled !'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+        if ($userVerif->getDeleted() == true) {
             return new JsonResponse([
                 'message' => 'Account deleted'
             ], Response::HTTP_UNAUTHORIZED);
@@ -259,7 +264,7 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
-    public function openId(User $user, int $idProfil,$historiqueService)
+    public function openId(User $user, int $idProfil, $historiqueService)
     {
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
@@ -278,16 +283,25 @@ class CreateUserService
         $verifUser = $this->userRepository->findOneBy(["accountId" => $user->getAccountId(), "account_type" => $user->getAccountType(), "profilId" => $verifProfil]);
         if ($verifUser == null) {
             $verifUser = $user;
+            $verifUser->setIsvalid(true);
+            $verifUser->setState(true);
+            $verifUser->setRoles($verifProfil->getRoles());
+            $verifUser->setProfilId($verifProfil);
+        }
+
+        if (!$verifUser->isState() ) {
+            return new JsonResponse([
+                'message' => 'Your account is disabled !'
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $verifUser->setPassword($this->hasher->hashPassword($verifUser, $verifUser->getAccountId()));
         $random = rand(10000, 99999);
-        $verifUser->setRoles($verifProfil->getRoles());
-        $verifUser->setProfilId($verifProfil);
+       
         $verifUser->setCode($random);
         // dd($admin);
         $errors = $this->validator->validate($verifUser);
-        $verifUser->setIsvalid(true);
+       
         $verifUser->setCreatedAt(new DateTimeImmutable());
         if (count($errors) > 0) {
             $messages = [];
@@ -301,10 +315,12 @@ class CreateUserService
         $verifUser->setLongitude($user->getLongitude());
         $verifUser->setAddressIp("");
         $verifUser->setProfilId($verifProfil);
-        //$history = $historiqueService->addHistory($verifUser);
+        
         try {
             $this->em->persist($verifUser);
             $this->em->flush();
+
+            $history = $historiqueService->addHistory($verifUser);
         } catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
@@ -327,6 +343,7 @@ class CreateUserService
             return new JsonResponse(["message" => "code not match"], Response::HTTP_FORBIDDEN);
         }
         $user->setIsvalid(true);
+        $user->setState(true);
 
         $this->em->persist($user);
         $this->em->flush();
@@ -361,26 +378,26 @@ class CreateUserService
     public function deleteUser($uuid)
     {
         $user = $this->userRepository->findOneBy(['id' => $uuid]);
-        if($user){
+        if ($user) {
             $histories = $this->historyRepository->findBy(['userId' => $user->getId()]);
-            
-            foreach ($histories as $historie ) {
+
+            foreach ($histories as $historie) {
                 $this->em->remove($historie);
             }
             $this->em->remove($user);
         }
-        
+
         $this->em->flush();
 
         return new JsonResponse(["message" => "Suppression ok"], Response::HTTP_OK);
     }
-    public function enableDisable($id,$etat)
+    public function enableDisable($id, $etat)
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
-        if(!$user){
+        if (!$user) {
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
-        $user->setIsvalid($etat);
+        $user->setState($etat);
         $this->em->persist($user);
         $this->em->flush();
 
@@ -394,7 +411,7 @@ class CreateUserService
     public function deleteRequest(DeleteRequests $deleteRequests)
     {
         $find = $this->userRepository->findOneBy(['id' => $deleteRequests->getUserId()]);
-        if(!$find){
+        if (!$find) {
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
         $this->em->persist($deleteRequests);
@@ -406,10 +423,10 @@ class CreateUserService
     public function confirmDeleteRequest($id)
     {
         $find = $this->deleteRequestRepository->findOneBy(['id' => $id]);
-        if(!$find){
+        if (!$find) {
             return new JsonResponse(["message" => "Request not found"], Response::HTTP_NOT_FOUND);
         }
-        $this->deleteAccount($find->getUserId(),true);
+        $this->deleteAccount($find->getUserId(), true);
         $find->setIsDone(true);
         $this->em->persist($find);
         $this->em->flush();
@@ -417,16 +434,15 @@ class CreateUserService
         return new JsonResponse(["message" => "updated successfully"], Response::HTTP_CREATED);
     }
 
-    public function deleteAccount($id,$local = false)
+    public function deleteAccount($id, $local = false)
     {
         $find = $this->userRepository->findOneBy(['id' => $id]);
-        if(!$find){
-            if($local){
+        if (!$find) {
+            if ($local) {
                 return ['message' => 'user not found'];
-            }else{
+            } else {
                 return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
             }
-           
         }
         $find->setDeleted(true);
         $find->setDataDeleted(new DateTime());
@@ -434,9 +450,9 @@ class CreateUserService
         $this->em->persist($find);
         $this->em->flush();
 
-        if($local){
+        if ($local) {
             return ['message' => 'user deleted successfully'];
-        }else{
+        } else {
             return new JsonResponse(["message" => "deleted successfully"], Response::HTTP_OK);
         }
     }
