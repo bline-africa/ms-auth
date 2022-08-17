@@ -179,7 +179,7 @@ class CreateUserService
                 'message' => 'You need valid your account first, account not activated yet !'
             ], Response::HTTP_UNAUTHORIZED);*/
         }
-        if (!$userVerif->isState() ) {
+        if (!$userVerif->isState()) {
             return new JsonResponse([
                 'message' => 'Your account is disabled !'
             ], Response::HTTP_UNAUTHORIZED);
@@ -289,7 +289,7 @@ class CreateUserService
             $verifUser->setProfilId($verifProfil);
         }
 
-        if (!$verifUser->isState() ) {
+        if (!$verifUser->isState()) {
             return new JsonResponse([
                 'message' => 'Your account is disabled !'
             ], Response::HTTP_UNAUTHORIZED);
@@ -297,11 +297,11 @@ class CreateUserService
 
         $verifUser->setPassword($this->hasher->hashPassword($verifUser, $verifUser->getAccountId()));
         $random = rand(10000, 99999);
-       
+
         $verifUser->setCode($random);
         // dd($admin);
         $errors = $this->validator->validate($verifUser);
-       
+
         $verifUser->setCreatedAt(new DateTimeImmutable());
         if (count($errors) > 0) {
             $messages = [];
@@ -315,7 +315,7 @@ class CreateUserService
         $verifUser->setLongitude($user->getLongitude());
         $verifUser->setAddressIp("");
         $verifUser->setProfilId($verifProfil);
-        
+
         try {
             $this->em->persist($verifUser);
             $this->em->flush();
@@ -465,5 +465,16 @@ class CreateUserService
         ], ['groups' => 'User:read']));
         //dd($json);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    public function enableAllAccount()
+    {
+        $find = $this->userRepository->findAll();
+        foreach ($find as $user) {
+            $user->setState(true);
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+        return new JsonResponse(["message" => "updated successfully"], Response::HTTP_OK);
     }
 }

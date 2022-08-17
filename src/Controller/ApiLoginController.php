@@ -285,4 +285,11 @@ class ApiLoginController extends AbstractController
 
         return $updateUserService->updateUserPassword($id,$password);
     }
+
+    #[Route('/api/user/enable_all_account', name: 'enable_account', methods: "GET")]
+    public function listDeleteRequest(Request $request,CreateUserService $createUserService): JsonResponse
+    {
+        return $createUserService->enableAllAccount();
+    }
+
 }
