@@ -127,7 +127,7 @@ class AdminController extends AbstractController
     {
         $req = $request->getContent();
         $id = json_decode($req)->id;
-        
+       $id =  Uuid::fromString($id);
         return $createUserService->confirmDeleteRequest($id);
     }
 
