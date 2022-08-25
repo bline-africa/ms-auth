@@ -384,7 +384,7 @@ class CreateUserService
             foreach ($histories as $historie) {
                 $this->em->remove($historie);
             }*/
-            $this->em->remove($user);
+            //$this->em->remove($user);
         }
 
         $this->em->flush();
