@@ -379,11 +379,11 @@ class CreateUserService
     {
         $user = $this->userRepository->findOneBy(['id' => $uuid]);
         if ($user) {
-            $histories = $this->historyRepository->findBy(['userId' => $user->getId()]);
+           /* $histories = $this->historyRepository->findBy(['userId' => $user->getId()]);
 
             foreach ($histories as $historie) {
                 $this->em->remove($historie);
-            }
+            }*/
             $this->em->remove($user);
         }
 
