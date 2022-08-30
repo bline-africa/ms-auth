@@ -12,6 +12,7 @@ services:
     App\Services\ProfilServices\ListProfilService: 
     App\Services\AdminService\ListAdminService:
     App\Services\MailerController:
+    App\Services\HttpClientServices\HttpServices:
         arguments:
           - '@mailer'
     # default configuration for services in *this* file

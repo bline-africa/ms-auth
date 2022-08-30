@@ -23,6 +23,7 @@ use App\Repository\FactureRepository;
 use App\Repository\ProfilAdminRepository;
 use App\Repository\TransactionRepository;
 use Psr\Log\LoggerInterface;
+use App\Services\HttpClientServices\HttpServices;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class TerminateSubscriber implements EventSubscriberInterface
@@ -37,12 +38,14 @@ class TerminateSubscriber implements EventSubscriberInterface
     private $transactionRepository;
     private $profileRepository;
     private $logger;
+    private $httpServices;
     public function __construct(
         MailerController $mailer,
         SerializerInterface $serializer,
         Environment $twig,
         ProfilAdminRepository $profilAdminRepository,
         LoggerInterface $logger,
+        HttpServices $httpServices,
 
     ) {
         $this->mailer = $mailer;
@@ -50,6 +53,7 @@ class TerminateSubscriber implements EventSubscriberInterface
         $this->twig = $twig;
         $this->profileRepository = $profilAdminRepository;
         $this->logger = $logger;
+        $this->httpServices = $httpServices;
     }
     public static function getSubscribedEvents()
     {
@@ -113,7 +117,7 @@ class TerminateSubscriber implements EventSubscriberInterface
                 $user = $this->serializer->deserialize($resContent, User::class, 'json');
                 $recipient = $user->getEmail();
                 $lang = json_decode($content)->lang;
-               $this->logger->info("langResult : ".$lang);
+                $this->logger->info("langResult : " . $lang);
                 $profil = $this->profileRepository->findOneBy(['id' => json_decode($content)->profilId]);
                 $template = 'account_validation.html.twig';
                 $object = '';
@@ -147,7 +151,7 @@ class TerminateSubscriber implements EventSubscriberInterface
                 $error = $ex->getMessage();
             }
             //$random = random_int(1, 10);
-           
+
         }
         if ($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
             try {
@@ -163,6 +167,77 @@ class TerminateSubscriber implements EventSubscriberInterface
                 //'code_recu' => $random
             ]);
             $this->mailer->sendEmail("Password update", $content, $recipient);
+        }
+
+        if ($uri == "/api/user/enable_disable" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
+            try {
+                $etat = json_decode($content)->etat;
+                $id = json_decode($content)->id;
+
+                $headers = [
+                    "Accept" => 'application/json'
+                ];
+                $uuids["uuid"] = $id;
+                $data["uuids"][] = $uuids;
+
+                $ret = $this->httpServices->sendRequest("http://127.0.0.1:101/api/user/info_by_list", $data, $headers, "POST");
+                $list = json_decode($ret->getContent())->list;
+                $userInfo = "";
+                foreach ($list as $key) {
+
+                    if ($key->id == $id) {
+                        $userInfo = $key;
+                        $this->logger->info("resultat1 " . $key->firebaseToken . " " . $key->firstname . " " . $key->id . " " . json_encode($userInfo));
+                    }
+                }
+
+
+                if ($etat) {
+                    $message[] = [
+                        "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                        "text" => ($userInfo->lang == "en") ? " Your account now avalaible ." : " Votre compte est de nouveau activé "
+                    ];
+                }
+
+                if (!$etat) {
+                    $message[] = [
+                        "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                        "text" => ($userInfo->lang == "en") ? " Your account is disable, please contact Bline support for more information ." : " Votre compte est désactivé, veuillez contacter le support technique pour plus d'informations "
+                    ];
+                }
+                $title[] = [
+                    "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                    "text" => ($userInfo->lang == "en") ? "Account" : "Compte"
+                ];
+
+
+
+                $users[] = [
+                    "userId" => $id,
+                    "token" => $userInfo->firebaseToken,
+                    "username" => $userInfo->firstname . " " . $userInfo->lastname,
+                    "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                ];
+                $firebase_data = ["type" => "alert", "id" => 0];
+
+                $data = [
+                    "message" => $message,
+                    "title" => $title,
+                    "users" => $users,
+                    "data" => $firebase_data
+                ];
+
+                try {
+                    $ret = $this->httpServices->sendRequest("http://127.0.0.1:105/api/notification/send_group", $data, $headers, "POST");
+                    $this->logger->info("resultat " . json_encode($ret));
+                } catch (\Throwable $th) {
+                    $this->logger->info("resultat notification " . $th->getMessage());
+                }
+                //  $abonne->getCodeR
+            } catch (Exception $ex) {
+                $error = $ex->getMessage();
+                $this->logger->info("erreur notification " . $ex->getMessage());
+            }
         }
     }
 }
