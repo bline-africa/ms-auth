@@ -44,6 +44,7 @@ class TerminateSubscriber implements EventSubscriberInterface
         SerializerInterface $serializer,
         Environment $twig,
         ProfilAdminRepository $profilAdminRepository,
+        UserRepository $userRepository,
         LoggerInterface $logger,
         HttpServices $httpServices,
 
@@ -54,6 +55,7 @@ class TerminateSubscriber implements EventSubscriberInterface
         $this->profileRepository = $profilAdminRepository;
         $this->logger = $logger;
         $this->httpServices = $httpServices;
+        $this->userRepository = $userRepository;
     }
     public static function getSubscribedEvents()
     {
