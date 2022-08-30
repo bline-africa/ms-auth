@@ -239,5 +239,69 @@ class TerminateSubscriber implements EventSubscriberInterface
                 $this->logger->info("erreur notification " . $ex->getMessage());
             }
         }
+
+        if ($uri == "/api/user/validate" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
+            try {
+                $code = json_decode($content)->code;
+                $id = json_decode($content)->id;
+
+                $user = $this->userRepository->findOneBy(["id" => $id, "isvalid" => true,"state" => true]);
+                if ($user != null && $user->getCode() == $code) {
+                    $headers = [
+                        "Accept" => 'application/json'
+                    ];
+                    $uuids["uuid"] = $id;
+                    $data["uuids"][] = $uuids;
+
+                    $ret = $this->httpServices->sendRequest("http://127.0.0.1:101/api/user/info_by_list", $data, $headers, "POST");
+                    $list = json_decode($ret->getContent())->list;
+                    $userInfo = "";
+                    foreach ($list as $key) {
+
+                        if ($key->id == $id) {
+                            $userInfo = $key;
+                            $this->logger->info("resultat1 " . $key->firebaseToken . " " . $key->firstname . " " . $key->id . " " . json_encode($userInfo));
+                        }
+                    }
+
+                    $message[] = [
+                        "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                        "text" => ($userInfo->lang == "en") ? " Your account is now active ." : " Votre compte est activé "
+                    ];
+
+                    $title[] = [
+                        "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                        "text" => ($userInfo->lang == "en") ? "Congrats" : "Félicitations"
+                    ];
+
+                    $users[] = [
+                        "userId" => $id,
+                        "token" => $userInfo->firebaseToken,
+                        "username" => $userInfo->firstname . " " . $userInfo->lastname,
+                        "lang" => ($userInfo->lang == "en") ? "en" : "fr",
+                    ];
+                    $firebase_data = ["type" => "alert", "id" => 0];
+
+                    $data = [
+                        "message" => $message,
+                        "title" => $title,
+                        "users" => $users,
+                        "data" => $firebase_data
+                    ];
+
+                    try {
+                        $ret = $this->httpServices->sendRequest("http://127.0.0.1:105/api/notification/send_group", $data, $headers, "POST");
+                        $this->logger->info("resultat " . json_encode($ret));
+                    } catch (\Throwable $th) {
+                        $this->logger->info("resultat notification " . $th->getMessage());
+                    }
+                }
+
+                //  $abonne->getCodeR
+            } catch (Exception $ex) {
+                $error = $ex->getMessage();
+                $this->logger->info("erreur notification " . $ex->getMessage());
+            }
+        }
     }
 }
