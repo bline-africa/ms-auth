@@ -32,7 +32,21 @@ class HttpServices
         return $content;
     }
 
-   
+    
 
-   
+    public function sendRequest($base_url,$json,$headers,$method)
+    {
+        $response = $this->client->request(
+            $method,
+            $base_url,
+            [
+                'headers' => $headers,
+                'json' => $json,
+            ]
+        );
+              
+        $content = $response;
+        //dd($response->getContent());
+        return $content;
+    }
 }
