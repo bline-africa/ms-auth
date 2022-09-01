@@ -250,7 +250,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="boolean", nullable=true,options={"default" : true})
      */
-    #[Groups('User:read')]
+    #[Groups(['User:read','History:read','UserUuid:read'])]
     private $state;
 
     
