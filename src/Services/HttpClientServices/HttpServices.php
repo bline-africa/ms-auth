@@ -32,39 +32,7 @@ class HttpServices
         return $content;
     }
 
-    public function sendFireBaseNotification($message,$title,$tokens)
-    {
-        $response = $this->client->request(
-            'POST',
-            'https://fcm.googleapis.com/fcm/send',
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'key=AAAA87Dvgns:APA91bF3RBC-ptEyqfsJytRLAp4W33g2RcVHeoXyQG4q4tsnmgPLO61o_GekU2McS6r8_00eIEbGOTOGHv8LnO0agL8AOsdDLm1hllAPQMc3iaZa7jRf9pzwKZquu8Z6yjWhfpx684uS'
-                    ],
-                'json' => ['registration_ids' => $tokens, 
-            'notification' => ["body" => $message,"title" => $title]],
-            ]
-        );
-              
-        $content = $response;
-        //dd($response->getContent());
-        return $content;
-    }
+   
 
-    public function sendRequest($base_url,$json,$headers,$method)
-    {
-        $response = $this->client->request(
-            $method,
-            $base_url,
-            [
-                'headers' => $headers,
-                'json' => $json,
-            ]
-        );
-              
-        $content = $response;
-        //dd($response->getContent());
-        return $content;
-    }
+   
 }
