@@ -229,11 +229,13 @@ class TerminateSubscriber implements EventSubscriberInterface
                     "data" => $firebase_data
                 ];
 
-                try {
-                    $ret = $this->httpServices->sendRequest("http://127.0.0.1:105/api/notification/send_group", $data, $headers, "POST");
-                    $this->logger->info("resultat " . json_encode($ret));
-                } catch (\Throwable $th) {
-                    $this->logger->info("resultat notification " . $th->getMessage());
+                if($userInfo->firebaseToken != null && !empty($userInfo->firebaseToken)){
+                    try {
+                        $ret = $this->httpServices->sendRequest("http://127.0.0.1:105/api/notification/send_group", $data, $headers, "POST");
+                        $this->logger->info("resultat " . json_encode($ret));
+                    } catch (\Throwable $th) {
+                        $this->logger->info("resultat notification " . $th->getMessage());
+                    }
                 }
                 //  $abonne->getCodeR
             } catch (Exception $ex) {
