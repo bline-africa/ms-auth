@@ -56,7 +56,7 @@ class AdminController extends AbstractController
     }
 
 
-    #[Route('/api/admin/info', name: 'admin_info_edit', methods: "PUT")]
+    #[Route('/api/admin/info', name: 'admin_info_edit', methods: "POST")]
     public function editAdminInfo(Request $request, UserInterface $userInt, SerializerInterface $serializer,
         AdminRepository $adminRepository, EntityManagerInterface $em): JsonResponse
     {
