@@ -11,4 +11,5 @@
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
+.env
 ###< lexik/jwt-authentication-bundle ###
