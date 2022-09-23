@@ -12,4 +12,5 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 .env
+nohup.out
 ###< lexik/jwt-authentication-bundle ###
