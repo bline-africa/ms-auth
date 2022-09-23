@@ -45,5 +45,15 @@ class ProviderController extends AbstractController
         }
     }
 
+    #[Route('/api/user/update_info', name: 'update_info', methods: "POST")]
+    public function updateInfo(Request $request, ProviderInfoService $providerInfoService, EntityManagerInterface $em): JsonResponse
+    {
+        $req = json_decode($request->getContent());
+        $firstname = $req->firstname;
+        $lastname = $req->lastname;
+        $id = $req->id;
+        return $providerInfoService->updateInfo($id,$lastname,$firstname);
+    }
+
     
 }

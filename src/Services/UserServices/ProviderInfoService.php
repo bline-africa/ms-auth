@@ -2,11 +2,13 @@
 namespace App\Services\UserServices;
 
 use App\Repository\UserRepository;
+use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ProviderInfoService{
     private $em;
@@ -17,10 +19,11 @@ class ProviderInfoService{
     private $jwt;
     private $serializer;
 
-    public function __construct(UserRepository $userRepository,JWTTokenManagerInterface $jwt,SerializerInterface $serializer) {
+    public function __construct(UserRepository $userRepository,JWTTokenManagerInterface $jwt,SerializerInterface $serializer,EntityManagerInterface $em) {
         $this->userRepository = $userRepository;
         $this->jwt = $jwt;
         $this->serializer = $serializer;
+        $this->em = $em;
     }
 
     public function getProviderInfo(UserInterface $user)
@@ -30,5 +33,23 @@ class ProviderInfoService{
         ], ['groups' => 'User:read']));
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    public function updateInfo($id,$lastname,$firstname)
+    {
+        $user = $this->userRepository->findOneBy(['id' => $id]);
+        if(!$user){
+            return new JsonResponse(["message" => "User not found !"], Response::HTTP_NOT_FOUND);
+        }
+        $user->setLastname($lastname);
+        $user->setFirstname($firstname);
+
+        try {
+            $this->em->persist($user);
+            $this->em->flush();
+            return new JsonResponse(["id" => $user->getId()], Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
