@@ -37,7 +37,7 @@ class AdminController extends AbstractController
     #[Route('/api/admin/profil/list', name: 'admin_list_profil')]
     public function listProfil(ListProfilService $listProfilService): Response
     {
-        return $this->listProfilService->listAdminProfil();
+        return $listProfilService->listAdminProfil();
     }    
     #[Route('/api/admin/list', name: 'list_admin')]
     public function listAdmin(ListAdminService $listAdminService,UserInterface $user): JsonResponse
