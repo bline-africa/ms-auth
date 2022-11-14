@@ -27,8 +27,10 @@ security:
         ROLE_SUPER_ADMIN: ROLE_ADMIN
         ROLE_CREATOR: ROLE_SUPER_ADMIN
         ROLE_ADMIN: 
+            - ROLE_MANAGER
             - ROLE_PROVIDER
             - ROLE_CUSTOMER
+        ROLE_MANAGER:
     firewalls:
         api_token_refresh:
             pattern: ^/api/token/refresh

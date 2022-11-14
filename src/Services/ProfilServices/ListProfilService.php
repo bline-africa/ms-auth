@@ -11,6 +11,7 @@ use App\Repository\ProfilAdminRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProxyManager\Factory\RemoteObject\Adapter\JsonRpc;
+use stdClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -49,8 +50,29 @@ class ListProfilService
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'Admin:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
-        
     }
 
-    
+    public function listAdminProfil()
+    {
+        $array = [];
+        $d = new stdClass();
+        $d->key = "ROLE_SUPER_ADMIN";
+        $d->name = "Super Admin";
+
+        $array[] = $d;
+
+        $d = new stdClass();
+        $d->key = "ROLE_ADMIN";
+        $d->name = "Admin";
+
+        $array[] = $d;
+
+        $d = new stdClass();
+        $d->key = "ROLE_MANAGER";
+        $d->name = "Manager";
+
+        $array[] = $d;
+
+        return new JsonResponse(["list" => $array], Response::HTTP_BAD_REQUEST);
+    }
 }
