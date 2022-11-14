@@ -6,6 +6,7 @@ use App\Entity\Admin;
 use App\Entity\DeleteRequests;
 use App\Repository\AdminRepository;
 use App\Services\AdminServices\ListAdminService;
+use App\Services\ProfilServices\ListProfilService;
 use App\Services\UserServices\CreateUserService;
 use App\Services\UserServices\ListUserService;
 use App\Services\UserServices\ProviderInfoService;
@@ -32,6 +33,12 @@ class AdminController extends AbstractController
             'controller_name' => 'ProviderController',
         ]);
     }
+
+    #[Route('/api/admin/profil/list', name: 'admin_list_profil')]
+    public function listProfil(ListProfilService $listProfilService): Response
+    {
+        return $this->listProfilService->listAdminProfil();
+    }    
     #[Route('/api/admin/list', name: 'list_admin')]
     public function listAdmin(ListAdminService $listAdminService,UserInterface $user): JsonResponse
     {

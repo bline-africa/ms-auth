@@ -52,7 +52,7 @@ class ListProfilService
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    public function listAdminProfil()
+    public function listAdminProfil():JsonResponse
     {
         $array = [];
         $d = new stdClass();
