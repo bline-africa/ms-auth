@@ -73,6 +73,6 @@ class ListProfilService
 
         $array[] = $d;
 
-        return new JsonResponse(["list" => $array], Response::HTTP_BAD_REQUEST);
+        return new JsonResponse(["list" => $array], Response::HTTP_OK);
     }
 }
