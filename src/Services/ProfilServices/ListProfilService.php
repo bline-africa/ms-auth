@@ -56,19 +56,19 @@ class ListProfilService
     {
         $array = [];
         $d = new stdClass();
-        $d->key = "ROLE_SUPER_ADMIN";
+        $d->id = "ROLE_SUPER_ADMIN";
         $d->name = "Super Admin";
 
         $array[] = $d;
 
         $d = new stdClass();
-        $d->key = "ROLE_ADMIN";
+        $d->id = "ROLE_ADMIN";
         $d->name = "Admin";
 
         $array[] = $d;
 
         $d = new stdClass();
-        $d->key = "ROLE_MANAGER";
+        $d->id = "ROLE_MANAGER";
         $d->name = "Manager";
 
         $array[] = $d;
