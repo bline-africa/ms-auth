@@ -30,7 +30,13 @@ security:
             - ROLE_MANAGER
             - ROLE_PROVIDER
             - ROLE_CUSTOMER
+            - ROLE_ADVISOR
+            - ROLE_MARKETING
+            - ROLE_SUPPORT
         ROLE_MANAGER:
+        ROLE_ADVISOR:
+        ROLE_MARKETING:
+        ROLE_SUPPORT:
     firewalls:
         api_token_refresh:
             pattern: ^/api/token/refresh

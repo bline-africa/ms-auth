@@ -73,6 +73,30 @@ class ListProfilService
 
         $array[] = $d;
 
+        $d = new stdClass();
+        $d->id = "ROLE_ADVISOR";
+        $d->name = "Africa Advisors";
+
+        $array[] = $d;
+
+        $d = new stdClass();
+        $d->id = "ROLE_MARKETING";
+        $d->name = "Associate Marketing";
+
+        $array[] = $d;
+
+        $d = new stdClass();
+        $d->id = "ROLE_MARKETING";
+        $d->name = "Associate Marketing";
+
+        $array[] = $d;
+
+        $d = new stdClass();
+        $d->id = "ROLE_SUPPORT";
+        $d->name = "Associate Support";
+
+        $array[] = $d;
+
         return new JsonResponse(["list" => $array], Response::HTTP_OK);
     }
 }
