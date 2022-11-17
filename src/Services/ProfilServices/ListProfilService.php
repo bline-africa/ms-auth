@@ -79,11 +79,7 @@ class ListProfilService
 
         $array[] = $d;
 
-        $d = new stdClass();
-        $d->id = "ROLE_MARKETING";
-        $d->name = "Associate Marketing";
-
-        $array[] = $d;
+       
 
         $d = new stdClass();
         $d->id = "ROLE_MARKETING";
