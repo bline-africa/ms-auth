@@ -72,6 +72,23 @@ class ListUserService
         return new JsonResponse($json, Response::HTTP_OK, [], true);
         
     }
+
+    public function listUsersByRange($nb,$libelle = "customer"): JsonResponse
+    {
+        $profil = $this->profilRepository->findOneBy(["libelle" => $libelle]);
+        $list = $this->userRepository->listUserByRange($nb,$profil->getId());
+        
+       // dd($list);
+       $data = array_filter($list,function($dt){
+        //dd($dt["is_deleted"]);
+        return $dt->getIsDeleted() == false;
+    });
+        $json = $this->serializer->serialize(["list" => $data], 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        
+    }
     public function listProvider(): JsonResponse
     {
         $profil = $this->profilRepository->findOneBy(["libelle" => "provider"]);

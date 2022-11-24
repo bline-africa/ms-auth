@@ -50,6 +50,14 @@ class AdminController extends AbstractController
         return $listUserService->listCustomers();
     }
 
+    #[Route('/api/customer/list_by_range', name: 'list_by_range',methods: "POST")]
+    public function listCustomerByRange(ListUserService $listUserService,Request $request): JsonResponse
+    {
+        $req = $request->getContent();
+        $json = json_decode($req);
+        return $listUserService->listUsersByRange($json->nb,"customer");
+    }
+
     #[Route('/api/provider/list', name: 'list_provider')]
     public function listProvider(ListUserService $listUserService): JsonResponse
     {

@@ -105,4 +105,21 @@ SQL,
             ->execute();
         return $query;
     }
+
+    public function listUserByRange($nb,$profilId)
+    {
+        $falseVal = true;
+       // $nullVal = "null";
+       
+        return $this->createQueryBuilder('n')
+           ->where('n.state is not null')
+           ->andWhere('n.state = :val2')
+           ->andWhere('n.profilId = :val3')
+            ->setParameter('val2', $falseVal)
+            ->setParameter('val3', $profilId)
+            ->orderBy('n.id', 'ASC')
+             ->setMaxResults($nb)
+            ->getQuery()
+            ->getResult();
+    }
 }
