@@ -44,6 +44,15 @@ class AdminController extends AbstractController
     {
         return $listAdminService->listAdmin($user);
     }
+
+    #[Route('/api/admin/disable_enable', name: 'disable_enable',methods:"POST")]
+    public function enableDisableAdmin(ListAdminService $listAdminService,UserInterface $user,Request $request): JsonResponse
+    {
+        $req = $request->getContent();
+        $json = json_decode($req);
+        return $listAdminService->disableEnable($json->id,$json->state);
+    }
+
     #[Route('/api/customer/list', name: 'list_user')]
     public function listUser(ListUserService $listUserService): JsonResponse
     {

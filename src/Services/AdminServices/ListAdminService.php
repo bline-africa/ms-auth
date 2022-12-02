@@ -54,8 +54,21 @@ class ListAdminService
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'Admin:read']));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
-        
     }
 
-    
+    public function disableEnable($id, $state)
+    {
+        $verif = $this->adminRepository->findOneBy(['id' => $id]);
+        if (!$verif) {
+            return new JsonResponse(["message" => "Admin not found"], Response::HTTP_NOT_FOUND);
+        }
+        try {
+            $verif->setIsValid($state);
+            $this->em->persist($verif);
+            $this->em->flush();
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_BAD_GATEWAY);
+        }
+        return new JsonResponse(["message" => $verif], Response::HTTP_OK);
+    }
 }
