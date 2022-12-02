@@ -130,6 +130,15 @@ class AdminController extends AbstractController
         return $createUserService->enableDisable($id,$etat);
     }
 
+    #[Route('/api/admin/change_admin_password', name: 'change_admin_password', methods: "POST")]
+    public function changeAdminPassword(Request $request,CreateUserService $createUserService,UserInterface $userInt): JsonResponse
+    {
+        $req = $request->getContent();
+        $id = json_decode($req)->id;
+        $password = json_decode($req)->password;
+        return $createUserService->changePassword($id,$password);
+    }
+
     #[Route('/api/user/request_account_delete', name: 'request_account_delete', methods: "POST")]
     public function request_account_delete(Request $request,CreateUserService $createUserService): JsonResponse
     {

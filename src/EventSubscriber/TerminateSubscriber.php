@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Entity\User;
 use App\Services\Messagerie\MailerController;
 use App\Entity\Abonne;
+use App\Entity\Admin;
 use App\Entity\Demande;
 use App\Entity\Devis;
 use Exception;
@@ -155,6 +156,29 @@ class TerminateSubscriber implements EventSubscriberInterface
             //$random = random_int(1, 10);
 
         }
+
+        if ($uri == "/api/create/admin" && $method == "POST" && $response->getStatusCode() == Response::HTTP_CREATED) {
+            $json = json_decode($request->getContent());
+            $name = $json->firstname." ".$json->lastname;
+            $userName = $json->username;
+            $email = $json->email;
+            $password = $json->password;
+
+            $content = "Salut ".$name.",<br>Voici vos identifiants de connexion : <br>Username : ".$userName."<br> Password : ".$password;
+            $this->mailer->sendEmail("Création de compte", $content, $email);
+        }
+
+        if ($uri == "/api/admin/change_admin_password" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
+            $admin = $this->serializer->deserialize($resContent, Admin::class, 'json');
+            $json = json_decode($request->getContent());
+            $name = $admin->getFirstname()." ".$admin->getLastname();
+            $userName = $admin->getUsername();
+            $email = $admin->getEmail();
+            $password = $admin->getPassword();
+
+            $content = "Salut ".$name.",<br>Voici vos identifiants de connexion : <br>Username : ".$userName."<br> Password : ".$password;
+            $this->mailer->sendEmail("Changement de mot de passe", $content, $email);
+        }
         if ($uri == "/api/user/find_user" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
             try {
                 $user = $this->serializer->deserialize($resContent, User::class, 'json');
@@ -229,7 +253,7 @@ class TerminateSubscriber implements EventSubscriberInterface
                     "data" => $firebase_data
                 ];
 
-                if($userInfo->firebaseToken != null && !empty($userInfo->firebaseToken)){
+                if ($userInfo->firebaseToken != null && !empty($userInfo->firebaseToken)) {
                     try {
                         $ret = $this->httpServices->sendRequest("http://127.0.0.1:105/api/notification/send_group", $data, $headers, "POST");
                         $this->logger->info("resultat " . json_encode($ret));
@@ -249,7 +273,7 @@ class TerminateSubscriber implements EventSubscriberInterface
                 $code = json_decode($content)->code;
                 $id = json_decode($content)->id;
 
-                $user = $this->userRepository->findOneBy(["id" => $id, "isvalid" => true,"state" => true]);
+                $user = $this->userRepository->findOneBy(["id" => $id, "isvalid" => true, "state" => true]);
                 if ($user != null && $user->getCode() == $code) {
                     $headers = [
                         "Accept" => 'application/json'

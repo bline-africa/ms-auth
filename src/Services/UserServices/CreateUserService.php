@@ -408,6 +408,23 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
+    public function changePassword($id, $password)
+    {
+        $user = $this->userRepository->findOneBy(['id' => $id]);
+        if (!$user) {
+            return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
+        }
+        $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $json = $this->serializer->serialize($user, 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'Admin:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
     public function deleteRequest(DeleteRequests $deleteRequests)
     {
         $find = $this->userRepository->findOneBy(['id' => $deleteRequests->getUserId()]);
