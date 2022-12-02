@@ -119,6 +119,12 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('Admin:read')]
     private $lastname;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    #[Groups('Admin:read')]
+    private $stringPassword;
+
     public function __construct()
     {
         $this->adminMetas = new ArrayCollection();
@@ -375,6 +381,18 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(?string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getStringPassword(): ?string
+    {
+        return $this->stringPassword;
+    }
+
+    public function setStringPassword(?string $stringPassword): self
+    {
+        $this->stringPassword = $stringPassword;
 
         return $this;
     }

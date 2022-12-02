@@ -174,7 +174,7 @@ class TerminateSubscriber implements EventSubscriberInterface
             $name = $admin->getFirstname()." ".$admin->getLastname();
             $userName = $admin->getUsername();
             $email = $admin->getEmail();
-            $password = $admin->getPassword();
+            $password = $admin->getStringPassword();
 
             $content = "Salut ".$name.",<br>Voici vos identifiants de connexion : <br>Username : ".$userName."<br> Password : ".$password;
             $this->mailer->sendEmail("Changement de mot de passe", $content, $email);

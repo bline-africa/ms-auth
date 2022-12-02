@@ -414,7 +414,9 @@ class CreateUserService
         if (!$user) {
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
-        $user->setPassword($this->hasher->hashPassword($user, $this->generateRandomString(6)));
+        $password = $this->generateRandomString(6);
+        $user->setPassword($this->hasher->hashPassword($user, $password));
+        $user->setStringPassword($password);
         $this->em->persist($user);
         $this->em->flush();
 
