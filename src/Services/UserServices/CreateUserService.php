@@ -408,13 +408,13 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    public function changePassword($id, $password)
+    public function changePassword($id)
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
         if (!$user) {
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
-        $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
+        $user->setPassword($this->hasher->hashPassword($user, $this->generateRandomString(6)));
         $this->em->persist($user);
         $this->em->flush();
 
@@ -423,6 +423,16 @@ class CreateUserService
         ], ['groups' => 'Admin:read']));
         //dd($json);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
     public function deleteRequest(DeleteRequests $deleteRequests)

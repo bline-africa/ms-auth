@@ -135,8 +135,8 @@ class AdminController extends AbstractController
     {
         $req = $request->getContent();
         $id = json_decode($req)->id;
-        $password = json_decode($req)->password;
-        return $createUserService->changePassword($id,$password);
+        //$password = json_decode($req)->password;
+        return $createUserService->changePassword($id);
     }
 
     #[Route('/api/user/request_account_delete', name: 'request_account_delete', methods: "POST")]
