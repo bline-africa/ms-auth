@@ -70,6 +70,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
+    #[Groups('Admin:read')]
     private $isValid;
 
     /**
