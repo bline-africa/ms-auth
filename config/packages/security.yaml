@@ -113,7 +113,7 @@ security:
         - { path: ^/api/create/admin, roles: ROLE_CREATOR }
         - { path: ^/api/admin/list, roles: ROLE_SUPER_ADMIN }
         - { path: ^/api/user/list, roles: ROLE_ADMIN }
-        - { path: ^/api/user/list_delete_request, roles: ROLE_ADMIN }
+        - { path: ^/api/user/list_delete_request, roles: ROLE_PROVIDER }
         - { path: ^/api/user/confirm_delete_request, roles: ROLE_ADMIN }
         - { path: ^/api/create/profil, roles: ROLE_CREATOR }
         - { path: ^/profile, roles: ROLE_SUPER_ADMIN }
