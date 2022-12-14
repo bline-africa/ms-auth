@@ -37,6 +37,8 @@ security:
         ROLE_ADVISOR:
         ROLE_MARKETING:
         ROLE_SUPPORT:
+            - ROLE_PROVIDER
+            - ROLE_CUSTOMER
     firewalls:
         api_token_refresh:
             pattern: ^/api/token/refresh
@@ -122,4 +124,5 @@ security:
         - { path: ^/api/user/user_history, roles: ROLE_ADMIN}
         - { path: ^/api/user/*, roles: ROLE_ADMIN}
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        
         
