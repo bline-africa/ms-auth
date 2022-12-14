@@ -34,8 +34,11 @@ security:
             - ROLE_MARKETING
             - ROLE_SUPPORT
         ROLE_MANAGER:
+            - ROLE_SUPPORT
         ROLE_ADVISOR:
+            - ROLE_SUPPORT
         ROLE_MARKETING:
+            - ROLE_SUPPORT
         ROLE_SUPPORT:
             - ROLE_PROVIDER
             - ROLE_CUSTOMER
@@ -121,6 +124,8 @@ security:
         - { path: ^/api/profil/list, roles:  IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: ^/api/provider/*, roles: ROLE_PROVIDER}
         - { path: ^/api/customer/*, roles: ROLE_CUSTOMER}
+        - { path: ^/api/user/list_delete_request, roles: ROLE_PROVIDER }
+        - { path: ^/api/user/list_delete_request, roles: ROLE_CUSTOMER }
         - { path: ^/api/user/user_history, roles: ROLE_ADMIN}
         - { path: ^/api/user/*, roles: ROLE_ADMIN}
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
