@@ -168,7 +168,7 @@ class CreateUserService
         if ($userVerif == null) {
             return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
         }
-        //dd($userVerif);
+        dd($userVerif);
         $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
         //dd($verifPassword);
         if (!$verifPassword) {
