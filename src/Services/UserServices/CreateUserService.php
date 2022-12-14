@@ -170,7 +170,7 @@ class CreateUserService
         }
        // dd($userVerif);
         $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
-        dd($verifPassword);
+        dd($user->getPassword());
         if (!$verifPassword) {
             return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
         }
