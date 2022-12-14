@@ -128,5 +128,6 @@ security:
         - { path: ^/api/user/user_history, roles: ROLE_ADMIN}
         - { path: ^/api/user/*, roles: ROLE_ADMIN}
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+         - { path: ^/api/user/list_delete_request, roles: ROLE_SUPPORT }
         
         
