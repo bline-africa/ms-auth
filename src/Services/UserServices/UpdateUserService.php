@@ -76,6 +76,8 @@ class UpdateUserService
         }
         $userVerif->setPassword($this->hasher->hashPassword($userVerif, $password));
         $userVerif->setPasswordCode("");
+        $userVerif->setDeleted(false);
+        $userVerif->setIsDeleted(false);
 
         $this->em->persist($userVerif);
         $this->em->flush();
