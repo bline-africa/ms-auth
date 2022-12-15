@@ -393,7 +393,7 @@ class CreateUserService
     }
     public function enableDisable($id, $etat)
     {
-        $user = $this->adminRepository->findOneBy(['id' => $id]);
+        $user = $this->userRepository->findOneBy(['id' => $id]);
         if (!$user) {
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
