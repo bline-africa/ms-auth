@@ -398,6 +398,7 @@ class CreateUserService
             return new JsonResponse(["message" => "user not match"], Response::HTTP_NOT_FOUND);
         }
         $user->setIsValid($etat);
+        $user->setState($etat);
         $this->em->persist($user);
         $this->em->flush();
 
