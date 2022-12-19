@@ -168,6 +168,18 @@ class TerminateSubscriber implements EventSubscriberInterface
             $this->mailer->sendEmail("Création de compte", $content, $email);
         }
 
+
+        if ($uri == "/api/create/user_by_admin" && $method == "POST" && $response->getStatusCode() == Response::HTTP_CREATED) {
+            $json = json_decode($request->getContent());
+            $name = $json->firstname." ".$json->lastname;
+            $userName = $json->username;
+            $email = $json->email;
+            $password = $json->password;
+
+            $content = "Salut ".$name.",<br>Voici vos identifiants de connexion : <br>Username : ".$userName."<br> Password : ".$password;
+            $this->mailer->sendEmail("Création de compte", $content, $email);
+        }
+
         if ($uri == "/api/admin/change_admin_password" && $method == "POST" && $response->getStatusCode() == Response::HTTP_OK) {
             $admin = $this->serializer->deserialize($resContent, Admin::class, 'json');
             $json = json_decode($request->getContent());
