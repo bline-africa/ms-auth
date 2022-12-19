@@ -191,6 +191,23 @@ class ApiLoginController extends AbstractController
     }
 
     /**
+     * @Route("api/create/user_by_admin", name="create_user_by_admin", methods="POST")
+     */
+    public function createUserByAdmin(
+        Request $request,
+        SerializerInterface $serializer,
+        CreateUserService $userService
+    ): JsonResponse {
+
+        $content = $request->getContent();
+        $user = $serializer->deserialize($content, User::class, 'json');
+
+        $idProfil = json_decode($content)->profilId;
+        // $profil = $profilAdminRepository->findOneBy(['id' => json_decode($content)->profilId]);
+        return $userService->createUserByAdmin($user, $idProfil);
+    }
+
+    /**
      * @Route("api/create/openid", name="create_user_openid", methods="POST")
      */
     function loginOpenId(

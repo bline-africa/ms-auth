@@ -264,6 +264,63 @@ class CreateUserService
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
+
+    public function createUserByAdmin(User $user, int $idProfil): JsonResponse
+    {
+        // $emailConstraint = new EmailValidator();
+        try {
+            $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        //  dd($verifProfil);
+        // $verifAdmin = new stdClass();
+        if (is_null($verifProfil)) {
+            return new JsonResponse(["message" => "profil not exists"], Response::HTTP_METHOD_NOT_ALLOWED);
+        }
+        $verifUser = $this->userRepository->findOneBy(['email' => $user->getEmail(), 'profilId' => $verifProfil]);
+        if ($verifUser) {
+            $message = "User " . $user->getEmail() . " already exists";
+            return new JsonResponse(["message" => $message], Response::HTTP_CONFLICT);
+        }
+        $verifUser = $this->userRepository->findOneBy(['username' => $user->getUserIdentifier(), 'profilId' => $verifProfil]);
+        if ($verifUser) {
+            $message = "User " . $user->getUserIdentifier() . " already exists";
+            return new JsonResponse(["message" => $message], Response::HTTP_CONFLICT);
+        }
+        $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
+        $random = rand(10000, 99999);
+        $user->setRoles($verifProfil->getRoles());
+        $user->setProfilId($verifProfil);
+        $user->setCode($random);
+
+        // dd($admin);
+        $errors = $this->validator->validate($user);
+        $user->setIsvalid(true);
+        $user->setState(true);
+        $user->setCreatedAt(new DateTimeImmutable());
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $violation) {
+                $messages[$violation->getPropertyPath()][] = $violation->getMessage();
+            }
+            return new JsonResponse(["message" => $messages], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->em->persist($user);
+            $this->em->flush();
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
+        }
+
+        $json = $this->serializer->serialize($user, 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+    }
+
     public function openId(User $user, int $idProfil, $historiqueService)
     {
         try {
