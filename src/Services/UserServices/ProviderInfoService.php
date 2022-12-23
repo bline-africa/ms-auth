@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\UserServices;
 
+use App\Repository\AdminRepository;
 use App\Repository\UserRepository;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -18,12 +19,14 @@ class ProviderInfoService{
     private $hasher;
     private $jwt;
     private $serializer;
+    private $adminRepository;
 
-    public function __construct(UserRepository $userRepository,JWTTokenManagerInterface $jwt,SerializerInterface $serializer,EntityManagerInterface $em) {
+    public function __construct(UserRepository $userRepository,JWTTokenManagerInterface $jwt,SerializerInterface $serializer,EntityManagerInterface $em,AdminRepository $adminRepository) {
         $this->userRepository = $userRepository;
         $this->jwt = $jwt;
         $this->serializer = $serializer;
         $this->em = $em;
+        $this->adminRepository = $adminRepository;
     }
 
     public function getProviderInfo(UserInterface $user)
@@ -39,6 +42,10 @@ class ProviderInfoService{
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
         if(!$user){
+            //return new JsonResponse(["message" => "User not found !"], Response::HTTP_NOT_FOUND);
+        }
+        $user = $this->adminRepository->findOneBy(['id' => $id]);
+        if(!$user){
             return new JsonResponse(["message" => "User not found !"], Response::HTTP_NOT_FOUND);
         }
         $user->setLastname($lastname);
@@ -52,4 +59,6 @@ class ProviderInfoService{
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    
 }
