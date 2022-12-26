@@ -43,11 +43,13 @@ class ProviderInfoService{
         $user = $this->userRepository->findOneBy(['id' => $id]);
         if(!$user){
             //return new JsonResponse(["message" => "User not found !"], Response::HTTP_NOT_FOUND);
+            $user = $this->adminRepository->findOneBy(['id' => $id]);
+            if(!$user){
+                //return new JsonResponse(["message" => "User not found !"], Response::HTTP_NOT_FOUND);
+            }
         }
        // $user = $this->adminRepository->findOneBy(['id' => $id]);
-        if(!$user){
-            //return new JsonResponse(["message" => "User not found !"], Response::HTTP_NOT_FOUND);
-        }
+        
         $user->setLastname($lastname);
         $user->setFirstname($firstname);
 
