@@ -172,7 +172,7 @@ class CreateUserService
         $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
        // dd([$user->getPassword(),$userVerif,$verifPassword]);
         if (!$verifPassword) {
-            return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => "User not found"], Response::HTTP_UNAUTHORIZED);
         }
         if (!$userVerif->getIsvalid()) {
             /* return new JsonResponse([
@@ -187,7 +187,7 @@ class CreateUserService
         if ($userVerif->getDeleted() == true) {
             return new JsonResponse([
                 'message' => 'Account deleted'
-            ], Response::HTTP_UNAUTHORIZED);
+            ], Response::HTTP_NOT_FOUND);
         }
         // dd($user);
         $userVerif->setLastConnect($user->getLastConnect());
