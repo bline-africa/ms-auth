@@ -142,7 +142,7 @@ class CreateUserService
         );
     }
 
-    public function loginUser(User $user, $idProfil, $historiqueService)
+    public function loginUser(User $user, $idProfil, $historiqueService,$lang)
     {
         // dd($user);
         if (null === $user) {
@@ -157,7 +157,7 @@ class CreateUserService
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         if ($verifProfil == null) {
-            return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang =="en")?"Profil not found":"Le profil est introuvable"], Response::HTTP_NOT_FOUND);
         }
         $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
         $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
@@ -166,13 +166,13 @@ class CreateUserService
             $userVerif = $userMail;
         }
         if ($userVerif == null) {
-            return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang =="en")?"adress email or username incorrect":"login incorrect"], Response::HTTP_NOT_FOUND);
         }
        // dd($userVerif);
         $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
        // dd([$user->getPassword(),$userVerif,$verifPassword]);
         if (!$verifPassword) {
-            return new JsonResponse(["message" => "User not found"], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(["message" =>($lang =="en")?"Password incorrect": "Le mot de passe est incorrect"], Response::HTTP_UNAUTHORIZED);
         }
         if (!$userVerif->getIsvalid()) {
             /* return new JsonResponse([
@@ -181,12 +181,12 @@ class CreateUserService
         }
         if (!$userVerif->isState()) {
             return new JsonResponse([
-                'message' => 'Your account is disabled !'
+                'message' => ($lang =="en")?"Your account is disabled !":'Votre compte est inactif !'
             ], Response::HTTP_UNAUTHORIZED);
         }
         if ($userVerif->getDeleted() == true) {
             return new JsonResponse([
-                'message' => 'Account deleted'
+                'message' => ($lang =="en")?"Account deleted":'Ce compte est supprimé'
             ], Response::HTTP_NOT_FOUND);
         }
         // dd($user);
