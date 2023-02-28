@@ -147,7 +147,7 @@ class CreateUserService
         // dd($user);
         if (null === $user) {
             return new JsonResponse([
-                'message' => 'missings credentials'
+                'message' => ($lang =="en")?'missings credentials':'veuillez remplir tous les champs'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -166,7 +166,7 @@ class CreateUserService
             $userVerif = $userMail;
         }
         if ($userVerif == null) {
-            return new JsonResponse(["message" => ($lang =="en")?"adress email or username incorrect":"login incorrect"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang =="en")?"address email or username incorrect":"login ou adresse email incorrect"], Response::HTTP_NOT_FOUND);
         }
        // dd($userVerif);
         $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
