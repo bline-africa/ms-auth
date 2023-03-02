@@ -165,13 +165,11 @@ class ApiLoginController extends AbstractController
     {
        // dd($request);
         $content = $request->getContent();
-        $idProfil = json_decode($content)->profilId;
-        $lang = json_decode($content)->lang??"en";
-        $user = $serializer->deserialize($content, User::class, 'json');
+      
         
         $user->setLastConnect(new DateTimeImmutable());
       //  $history = $historiqueService->addHistory($user,$idProfil);
-        return $userService->trimUserName($user, $idProfil, $historiqueService,$lang);
+        return $userService->trimUserName();
     }
 
     /**
