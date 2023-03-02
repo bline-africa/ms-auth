@@ -59,7 +59,8 @@ $tokenParts = explode(".", $tokenString);
             ->setParameter('username', $jwtPayload->username);
           //  ->setParameter('role', 'ROLE_%"' .$jwtPayload->roles. '"%');
 
-        return $qb->getQuery()->getOneOrNullResult();
+       $users =  $qb->getQuery()->getOneOrNullResult();
+        dd($users);
     }
 
     /**
