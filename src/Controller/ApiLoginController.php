@@ -167,7 +167,7 @@ class ApiLoginController extends AbstractController
         $content = $request->getContent();
       
         
-        $user->setLastConnect(new DateTimeImmutable());
+       // $user->setLastConnect(new DateTimeImmutable());
       //  $history = $historiqueService->addHistory($user,$idProfil);
         return $userService->trimUserName();
     }

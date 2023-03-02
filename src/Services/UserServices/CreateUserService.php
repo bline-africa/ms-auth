@@ -145,7 +145,7 @@ class CreateUserService
     public function trimUserName()
     {
         $list = $this->userRepository->findAll();
-        dd($list);
+      //  dd($list);
 $array = [];
         foreach ($list as $user) {
             $user->setUserName(trim($user->getUserName()));
