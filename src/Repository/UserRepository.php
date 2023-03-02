@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
 private $request;
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwtManager)
     {
         parent::__construct($registry, User::class);
         //$this->$request = $request;
