@@ -77,7 +77,7 @@ security:
             provider: user
             json_login:
                 check_path: /api/login_user
-                success_handler: App\Services\UserServices\LoginUserService
+                #success_handler: App\Services\UserServices\LoginUserService
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         api:
             pattern: ^/api
