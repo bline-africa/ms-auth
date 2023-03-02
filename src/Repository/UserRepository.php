@@ -28,7 +28,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $entityManager = $this->getEntityManager();
 
-        $userRepository = $this->entityManager->getRepository(User::class);
+        $userRepository = $entityManager->getRepository(User::class);
 
         $user = $userRepository->findOneBy([
             'username' => $username,
