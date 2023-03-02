@@ -86,7 +86,7 @@ security:
         api:
             pattern: ^/api
             stateless: true
-            provider: ['admin','user']
+            provider: providers
             entry_point: jwt
             guard:
                 authenticators:
