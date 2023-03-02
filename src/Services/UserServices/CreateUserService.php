@@ -148,8 +148,8 @@ class CreateUserService
       //  dd($list);
 $array = [];
         foreach ($list as $user) {
-            $user->setUserName($user->getUserName());
-            $array[] = $user->getUserName().'-'.trim($user->getUserName());
+            $user->setUserName(strtolower($user->getUserName()));
+            $array[] = $user->getUserName().'-'.mb_strtolower($user->getUserName());
             //$this->em->persist($user);
        //$this->em->flush();
         
