@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 //use Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\Token\JWTUserToken;
-use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+//use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -34,10 +34,10 @@ private $jwt;
     {
         $entityManager = $this->getEntityManager();
 
-        $ltoken = new JWTUserToken([]);
+       // $ltoken = new JWTUserToken([]);
 $tokenString = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
-$ltoken->setToken($tokenString);
-$payload = $this->jwt->decode($ltoken);
+//$ltoken->setToken($tokenString);
+$payload = $this->jwt->decode($tokenString);
 dd($payload);
         $userRepository = $entityManager->getRepository(User::class);
 
