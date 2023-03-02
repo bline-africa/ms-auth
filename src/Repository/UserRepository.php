@@ -47,7 +47,7 @@ $tokenParts = explode(".", $tokenString);
     $tokenPayload = base64_decode($tokenParts[1]);
     $jwtHeader = json_decode($tokenHeader);
     $jwtPayload = json_decode($tokenPayload);
-dd((Array)$jwtPayload->roles);
+//dd((Array)$jwtPayload->roles);
         
 
         $qb = $entityManager->createQueryBuilder();
