@@ -19,17 +19,18 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
-    
-    public function __construct(ManagerRegistry $registry,Request $request)
+
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
+       // $this->$_REQUEST
     }
 
 
     public function loadUserByUsername(string $userNameAndRole): ?User
     {
         $entityManager = $this->getEntityManager();
-dd($request);
+dd($_REQUEST);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
