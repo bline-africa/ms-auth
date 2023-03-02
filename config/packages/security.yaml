@@ -13,7 +13,7 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         #app_user_provider:
         admin:
-            class: App\Security\CustomUserProvider
+            #class: App\Security\CustomUserProvider
             entity:
                 class: App\Entity\Admin
                 property: username
@@ -21,7 +21,7 @@ security:
             class: App\Security\CustomUserProvider
             entity:
                 class: App\Entity\User
-                property: username
+                #property: username
                 # Add the "role" property to the provider
             
         all_users:
