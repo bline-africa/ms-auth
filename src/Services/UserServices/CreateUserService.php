@@ -144,7 +144,6 @@ class CreateUserService
 
     public function loginUser(User $user, $idProfil, $historiqueService,$lang)
     {
-        // dd($user);
         if (null === $user) {
             return new JsonResponse([
                 'message' => ($lang =="en")?'missings credentials':'veuillez remplir tous les champs'
@@ -189,7 +188,7 @@ class CreateUserService
                 'message' => ($lang =="en")?"Account deleted":'Ce compte est supprimé'
             ], Response::HTTP_NOT_FOUND);
         }
-         //dd($user);
+        // dd($user);
         $userVerif->setLastConnect($user->getLastConnect());
         $userVerif->setLatitude($user->getLatitude());
         $userVerif->setLongitude($user->getLongitude());
@@ -201,9 +200,8 @@ class CreateUserService
         //dd($user);
         $this->em->persist($userVerif);
         $this->em->flush();
-         dd($userVerif);
+        // dd($userVerif);
         $userVerif->setUserName(trim($userVerif->getUserName()));
-        $userVerif->setEmail(trim($userVerif->getEmail()));
         $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history,], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
