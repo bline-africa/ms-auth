@@ -23,9 +23,9 @@ security:
                 property: username
                 # Add the "role" property to the provider
             
-        all_users:
-            chain:
-                providers: ['admin','user']
+        #all_users:
+            #chain:
+                #providers: ['admin','user']
     role_hierarchy:
         ROLE_SUPER_ADMIN: ROLE_ADMIN
         ROLE_CREATOR: ROLE_SUPER_ADMIN
