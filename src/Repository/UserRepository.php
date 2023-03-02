@@ -19,11 +19,11 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
-private $request;
+private $jwtManager;
     public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwtManager)
     {
         parent::__construct($registry, User::class);
-        //$this->$request = $request;
+        $this->$jwtManager = $jwtManager;
     }
 
 
@@ -32,7 +32,8 @@ private $request;
         $entityManager = $this->getEntityManager();
 
 $token = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
-dd($token);
+$payload = $jwtManager->decode($token);
+dd($payload);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
