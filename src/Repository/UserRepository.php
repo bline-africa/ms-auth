@@ -30,7 +30,7 @@ private $request;
     public function loadUserByUsername(string $userNameAndRole): ?User
     {
         $entityManager = $this->getEntityManager();
-dd($_REQUEST);
+dd(apache_request_headers());
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
