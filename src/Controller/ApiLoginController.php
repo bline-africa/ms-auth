@@ -159,7 +159,7 @@ class ApiLoginController extends AbstractController
     }
 
      /**
-     * @Route("api/trim_username", name="trim_username", methods="POST")
+     * @Route("api/user/trim_username", name="trim_username", methods="POST")
      */
     public function tirmUserName(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
     {
