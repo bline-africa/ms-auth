@@ -19,11 +19,7 @@ security:
         user:
             entity:
                 class: App\Entity\User
-                list:
-                    fields:
-                        - { property: 'username' }
-                        
-                #property: username
+                property: username
                 # Add the "role" property to the provider
             
         all_users:
