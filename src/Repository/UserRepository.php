@@ -33,7 +33,7 @@ private $jwt;
         $entityManager = $this->getEntityManager();
 
 $token = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
-$payload = $jwt->decode($token);
+$payload = $this->jwt->decode($token);
 dd($payload);
         $userRepository = $entityManager->getRepository(User::class);
 
