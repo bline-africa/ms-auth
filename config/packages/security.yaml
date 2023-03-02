@@ -17,7 +17,7 @@ security:
                 class: App\Entity\Admin
                 property: username
         user:
-            class: App\Security\CustomUserProvider
+            #class: App\Security\CustomUserProvider
             entity:
                 class: App\Entity\User
                 property: username
