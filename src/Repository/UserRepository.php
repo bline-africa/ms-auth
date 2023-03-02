@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface/*,UserLoaderInterface*/
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
 private $jwt;
 private $tokenStorageInterface;
@@ -33,16 +33,16 @@ private $tokenStorageInterface;
     }
 
 
- /*   public function loadUserByUsername(string $userNameAndRole): ?User
+    public function loadUserByUsername(string $userNameAndRole): ?User
     {
         $entityManager = $this->getEntityManager();
 
        // $ltoken = new JWTUserToken([]);
 $tokenString = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
 //$ltoken->setToken($tokenString);
-//$payload = $this->jwt->decode($tokenString);
-$decodedJwtToken = $this->jwt->decode($this->tokenStorageInterface->getToken());
-dd($decodedJwtToken);
+$payload = $this->jwt->decode($tokenString);
+//$decodedJwtToken = $this->jwt->decode($this->tokenStorageInterface->getToken());
+dd($payload);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
@@ -58,7 +58,7 @@ dd($decodedJwtToken);
         }
 
         return $user;
-    }*/
+    }
 
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
