@@ -71,12 +71,12 @@ security:
             security: false
             pattern: ^/(api/profil/list|api/create/user|api/user/validate|api/user/send_code|api/create/openid|api/user/find_user|api/user/find_user_code|api/user/update_user_password|api/provider/list_uuid|api/user/request_account_delete|api/user/enable_all_account|api/user/update_info|api/customer/list_by_range)
         admin_user:
-            pattern: ^/api/login_user
+            pattern: ^/api/test_login_user
             stateless: true
             #anonymous: true
             provider: user
             json_login:
-                check_path: /api/login_user
+                check_path: /api/test_login_user
                 success_handler: App\Services\UserServices\LoginUserService
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         api:
