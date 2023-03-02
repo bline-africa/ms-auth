@@ -30,7 +30,9 @@ private $request;
     public function loadUserByUsername(string $userNameAndRole): ?User
     {
         $entityManager = $this->getEntityManager();
-dd(apache_request_headers());
+
+$token = str_replace('Bearer ', '', $request->headers->get('Authorization')['Authorization']);
+dd($token);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
