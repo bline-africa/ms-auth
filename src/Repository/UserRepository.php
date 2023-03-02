@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface/*,UserLoaderInterface*/
 {
 private $jwt;
 private $tokenStorageInterface;
@@ -33,7 +33,7 @@ private $tokenStorageInterface;
     }
 
 
-    public function loadUserByUsername(string $userNameAndRole): ?User
+ /*   public function loadUserByUsername(string $userNameAndRole): ?User
     {
         $entityManager = $this->getEntityManager();
 
@@ -58,7 +58,7 @@ dd($decodedJwtToken);
         }
 
         return $user;
-    }
+    }*/
 
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
