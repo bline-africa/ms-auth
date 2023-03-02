@@ -66,7 +66,8 @@ $tokenParts = explode(".", $tokenString);
 $ret = $user;
            }
        }
-        dd($ret);
+       // dd($ret);
+       return $ret;
     }
 
     /**
