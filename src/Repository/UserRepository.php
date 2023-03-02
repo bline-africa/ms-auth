@@ -55,9 +55,9 @@ $tokenParts = explode(".", $tokenString);
         $qb->select('u')
             ->from(User::class, 'u')
             ->where('u.username = :username')
-            ->andWhere(':role MEMBER OF u.roles')
-            ->setParameter('username', $jwtPayload->username);
-            //->setParameter('role', (Array)$jwtPayload->roles);
+            ->andWhere(':role  IN u.roles')
+            ->setParameter('username', $jwtPayload->username)
+            ->setParameter('role', (Array)$jwtPayload->roles);
 
         return $qb->getQuery()->getOneOrNullResult();
     }
