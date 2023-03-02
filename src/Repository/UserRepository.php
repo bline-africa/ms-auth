@@ -40,9 +40,14 @@ private $tokenStorageInterface;
        // $ltoken = new JWTUserToken([]);
 $tokenString = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
 //$ltoken->setToken($tokenString);
-$payload = $this->jwt->decode($tokenString);
+//$payload = $this->jwt->decode($tokenString);
 //$decodedJwtToken = $this->jwt->decode($this->tokenStorageInterface->getToken());
-dd($payload);
+$tokenParts = explode(".", $tokenString); 
+ $tokenHeader = base64_decode($tokenParts[0]);
+    $tokenPayload = base64_decode($tokenParts[1]);
+    $jwtHeader = json_decode($tokenHeader);
+    $jwtPayload = json_decode($tokenPayload);
+dd($jwtPayload);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
