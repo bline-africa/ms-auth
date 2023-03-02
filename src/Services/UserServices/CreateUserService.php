@@ -202,7 +202,75 @@ class CreateUserService
         $this->em->persist($userVerif);
         $this->em->flush();
         // dd($userVerif);
-        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history], 'json', array_merge([
+        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history,], 'json', array_merge([
+            'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        ], ['groups' => 'User:read']));
+        //dd($json);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+
+    public function loginUserTest(User $user, $idProfil, $historiqueService,$lang)
+    {
+        // dd($user);
+        if (null === $user) {
+            return new JsonResponse([
+                'message' => ($lang =="en")?'missings credentials':'veuillez remplir tous les champs'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        try {
+            $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
+        } catch (Exception $ex) {
+            return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        if ($verifProfil == null) {
+            return new JsonResponse(["message" => ($lang =="en")?"Profil not found":"Le profil est introuvable"], Response::HTTP_NOT_FOUND);
+        }
+        $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
+        $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
+
+        if ($userMail) {
+            $userVerif = $userMail;
+        }
+        if ($userVerif == null) {
+            return new JsonResponse(["message" => ($lang =="en")?"address email or username incorrect":"login ou adresse email incorrect"], Response::HTTP_NOT_FOUND);
+        }
+       // dd($userVerif);
+        $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
+       // dd([$user->getPassword(),$userVerif,$verifPassword]);
+        if (!$verifPassword) {
+            return new JsonResponse(["message" =>($lang =="en")?"Password incorrect": "Le mot de passe est incorrect"], Response::HTTP_UNAUTHORIZED);
+        }
+        if (!$userVerif->getIsvalid()) {
+            /* return new JsonResponse([
+                'message' => 'You need valid your account first, account not activated yet !'
+            ], Response::HTTP_UNAUTHORIZED);*/
+        }
+        if (!$userVerif->isState()) {
+            return new JsonResponse([
+                'message' => ($lang =="en")?"Your account is disabled !":'Votre compte est inactif !'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+        if ($userVerif->getDeleted() == true) {
+            return new JsonResponse([
+                'message' => ($lang =="en")?"Account deleted":'Ce compte est supprimé'
+            ], Response::HTTP_NOT_FOUND);
+        }
+        // dd($user);
+        $userVerif->setLastConnect($user->getLastConnect());
+        $userVerif->setLatitude($user->getLatitude());
+        $userVerif->setLongitude($user->getLongitude());
+        $userVerif->setAddressIp($user->getAddressIp());
+        $userVerif->setProfilId($verifProfil);
+        $history = $historiqueService->addHistory($userVerif);
+
+
+        //dd($user);
+        $this->em->persist($userVerif);
+        $this->em->flush();
+        // dd($userVerif);
+        $json = $this->serializer->serialize(["token" => $userVerif, 'history' => $history,], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);

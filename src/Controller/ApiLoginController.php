@@ -158,6 +158,19 @@ class ApiLoginController extends AbstractController
         return $userService->loginUser($user, $idProfil, $historiqueService,$lang);
     }
 
+    public function loginUserTest(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
+    {
+        //dd($request);
+        $content = $request->getContent();
+        $idProfil = json_decode($content)->profilId;
+        $lang = json_decode($content)->lang??"en";
+        $user = $serializer->deserialize($content, User::class, 'json');
+        
+        $user->setLastConnect(new DateTimeImmutable());
+      //  $history = $historiqueService->addHistory($user,$idProfil);
+        return $userService->loginUserTest($user, $idProfil, $historiqueService,$lang);
+    }
+
     /**
      * @Route("api/admin_profil", name="admin_login", methods="GET")
      */
