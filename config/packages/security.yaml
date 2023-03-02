@@ -24,9 +24,9 @@ security:
                 property: username
                 # Add the "role" property to the provider
             
-        all_users:
-            chain:
-                providers: ['admin','user']
+        #all_users:
+            #chain:
+                #providers: ['admin','user']
     role_hierarchy:
         ROLE_SUPER_ADMIN: ROLE_ADMIN
         ROLE_CREATOR: ROLE_SUPER_ADMIN
@@ -51,7 +51,7 @@ security:
             pattern: ^/api/token/refresh
             stateless: true
             refresh_jwt: ~
-            provider: all_users
+            provider: ['admin','user']
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -60,7 +60,7 @@ security:
             pattern:  ^/api/token/refresh
             stateless: true
             #anonymous: true
-            provider: all_users
+            provider: ['admin','user']
             
         admin_login:
             pattern: ^/api/login_admin
@@ -86,7 +86,7 @@ security:
         api:
             pattern: ^/api
             stateless: true
-            provider: all_users
+            provider: ['admin','user']
             entry_point: jwt
             guard:
                 authenticators:
