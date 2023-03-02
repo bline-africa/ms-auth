@@ -15,7 +15,7 @@ security:
         admin:
             entity:
                 class: App\Entity\Admin
-                property: [username,role]
+                property: username
         user:
             entity:
                 class: App\Entity\User
