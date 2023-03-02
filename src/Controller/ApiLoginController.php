@@ -158,6 +158,9 @@ class ApiLoginController extends AbstractController
         return $userService->loginUser($user, $idProfil, $historiqueService,$lang);
     }
 
+    /**
+     * @Route("api/login_user_test", name="login_user_test", methods="POST")
+     */
     public function loginUserTest(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
     {
         //dd($request);
