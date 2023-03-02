@@ -24,10 +24,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
-    public function loadUserByUsername(string $userNameAndRole): ?User
+    public function loadUserByUsername(string $userNameAndRole,$roles): ?User
     {
         $entityManager = $this->getEntityManager();
-dd($userNameAndRole);
+dd($role);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
