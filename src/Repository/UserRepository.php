@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,7 +19,7 @@ use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry,Request $request)
     {
         parent::__construct($registry, User::class);
     }
@@ -27,7 +28,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function loadUserByUsername(string $userNameAndRole,$roles): ?User
     {
         $entityManager = $this->getEntityManager();
-dd($role);
+dd($request);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
