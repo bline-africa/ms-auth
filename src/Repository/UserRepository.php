@@ -36,7 +36,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('query', $usernameOrEmail)
             ->getOneOrNullResult();
     }
-}
+
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
