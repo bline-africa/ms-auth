@@ -189,7 +189,7 @@ class CreateUserService
                 'message' => ($lang =="en")?"Account deleted":'Ce compte est supprimé'
             ], Response::HTTP_NOT_FOUND);
         }
-        // dd($user);
+         dd($user);
         $userVerif->setLastConnect($user->getLastConnect());
         $userVerif->setLatitude($user->getLatitude());
         $userVerif->setLongitude($user->getLongitude());
