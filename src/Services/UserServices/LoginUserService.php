@@ -45,7 +45,7 @@ class LoginUserService implements AuthenticationSuccessHandlerInterface{
        // $history = $this->historiqueService->addHistory($user);
        // dd($user);
        $history = new History();
-        return $this->userService->loginUser($user,$idProfil,$this->historiqueService);
+        return $this->userService->loginUser($user,$idProfil,$this->historiqueService,"");
         // on success, let the request continue
        // return null;
     }
