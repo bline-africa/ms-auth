@@ -143,7 +143,7 @@ class ApiLoginController extends AbstractController
     }
 
     /**
-     * @Route("api/login_user_test", name="login_user_test", methods="POST")
+     * @Route("api/login_user", name="login_user", methods="POST")
      */
     public function loginUser(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
     {
@@ -159,7 +159,7 @@ class ApiLoginController extends AbstractController
     }
 
     /**
-     * @Route("api/login_user", name="login_user", methods="POST")
+     * @Route("api/login_user_test", name="login_user_test", methods="POST")
      */
     public function loginUserTest(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
     {
