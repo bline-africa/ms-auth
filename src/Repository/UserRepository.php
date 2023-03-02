@@ -47,7 +47,7 @@ $tokenParts = explode(".", $tokenString);
     $tokenPayload = base64_decode($tokenParts[1]);
     $jwtHeader = json_decode($tokenHeader);
     $jwtPayload = json_decode($tokenPayload);
-dd($jwtPayload->roles);
+dd($jwtPayload->roles[0]);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
