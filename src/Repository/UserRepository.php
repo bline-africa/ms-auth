@@ -20,10 +20,10 @@ use Symfony\Component\HttpFoundation\Request;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
 private $request;
-    public function __construct(ManagerRegistry $registry,Request $request)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
-        $this->$request = $request;
+        //$this->$request = $request;
     }
 
 
