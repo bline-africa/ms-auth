@@ -19,9 +19,9 @@ security:
         user:
             entity:
                 class: App\Entity\User
-                property: username
+                property: username,role
                 # Add the "role" property to the provider
-                property: role
+            
         all_users:
             chain:
                 providers: ['admin','user']
