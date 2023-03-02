@@ -148,7 +148,7 @@ class ApiLoginController extends AbstractController
     public function loginUser(Request $request, SerializerInterface $serializer, CreateUserService $userService, CreateHistoryService $historiqueService)
     {
        // dd($request);
-       dd($request);
+       dd($request->headers);
         $content = $request->getContent();
         $idProfil = json_decode($content)->profilId;
         $lang = json_decode($content)->lang??"en";
