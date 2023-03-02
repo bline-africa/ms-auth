@@ -142,6 +142,21 @@ class CreateUserService
         );
     }
 
+    public function trimUserName()
+    {
+        $list = $this->userRepository->findAll();
+$array = [];
+        foreach ($list as $user) {
+            $user->setUserName(trim($user->getUserName()));
+            $array[] = $user->getUserName().' - '.$user->setUserName(trim($user->getUserName()));
+          //  $this->em->persist($user);
+       // $this->em->flush();
+        
+        }
+        return new JsonResponse([
+            'message' => $array,
+        ], Response::HTTP_OK);
+    }
     public function loginUser(User $user, $idProfil, $historiqueService,$lang)
     {
         if (null === $user) {
