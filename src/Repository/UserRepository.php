@@ -47,22 +47,19 @@ $tokenParts = explode(".", $tokenString);
     $tokenPayload = base64_decode($tokenParts[1]);
     $jwtHeader = json_decode($tokenHeader);
     $jwtPayload = json_decode($tokenPayload);
-dd($jwtPayload->roles[0]);
-        $userRepository = $entityManager->getRepository(User::class);
+//dd($jwtPayload->roles[0]);
+        
 
-        $queryBuilder = $userRepository->createQueryBuilder('u');
-        $queryBuilder->where('u.username = :username OR u.roles = :role')
-            ->setParameter('username', $userNameAndRole)
-            ->setParameter('role', $userNameAndRole)
-            ->setMaxResults(1);
+        $qb = $entityManager->createQueryBuilder();
 
-        $user = $queryBuilder->getQuery()->getOneOrNullResult();
+        $qb->select('u')
+            ->from(User::class, 'u')
+            ->where('u.username = :username')
+            ->andWhere(':role MEMBER OF u.roles')
+            ->setParameter('username', $jwtPayload->username)
+            ->setParameter('role', $jwtPayload->roles);
 
-        if (!$user) {
-            throw new UsernameNotFoundException('User not found');
-        }
-
-        return $user;
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
