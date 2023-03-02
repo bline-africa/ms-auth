@@ -19,7 +19,7 @@ security:
         user:
             entity:
                 class: App\Entity\User
-                property: email
+                property: username
         all_users:
             chain:
                 providers: ['admin','user']
