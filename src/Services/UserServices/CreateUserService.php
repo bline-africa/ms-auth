@@ -270,6 +270,7 @@ class CreateUserService
         $this->em->persist($userVerif);
         $this->em->flush();
         // dd($userVerif);
+        $userVerif->setUserName(trim($userVerif->getUserName()));
         $json = $this->serializer->serialize(["token" => $userVerif, 'history' => $history,], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
