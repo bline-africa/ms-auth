@@ -28,7 +28,7 @@ class ProviderController extends AbstractController
     #[Route('/api/provider/info', name: 'provider_info', methods: "GET")]
     public function getUserInfo(ProviderInfoService $providerInfoService,UserInterface $user,Request $request):JsonResponse
     {
-        dd($_REQUEST);
+        dd(apache_request_headers());
         return $providerInfoService->getProviderInfo($user);
     }
 
