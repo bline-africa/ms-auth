@@ -202,7 +202,7 @@ class CreateUserService
         $this->em->flush();
         // dd($userVerif);
         $userVerif->setUserName(trim($userVerif->getUserName()));
-        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history,], 'json', array_merge([
+        $json = $this->serializer->serialize(["token" => $userVerif, 'history' => $history,], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
@@ -269,7 +269,7 @@ class CreateUserService
         //dd($user);
         $this->em->persist($userVerif);
         $this->em->flush();
-         dd($userVerif);
+        // dd($userVerif);
         $userVerif->setUserName(trim($userVerif->getUserName()));
         $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history,], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
