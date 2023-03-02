@@ -24,7 +24,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
-    public function loadUserByIdentifier(string $usernameOrEmail): ?User
+    public function loadUserByUsername(string $usernameOrEmail): ?User
     {
         $entityManager = $this->getEntityManager();
 
