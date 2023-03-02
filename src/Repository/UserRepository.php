@@ -60,7 +60,13 @@ $tokenParts = explode(".", $tokenString);
           //  ->setParameter('role', 'ROLE_%"' .$jwtPayload->roles. '"%');
 
        $users =  $qb->getQuery()->getResult();
-        dd($users);
+       $ret = null;
+       foreach($users as $user){
+           if(in_array($user->getRoles()[0],(Array)$jwtPayload->roles)){
+$ret = $user;
+           }
+       }
+        dd($ret);
     }
 
     /**
