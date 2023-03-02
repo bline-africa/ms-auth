@@ -22,7 +22,7 @@ security:
                 list:
                     fields:
                         - { property: 'username' }
-                        - { property: 'roles' }
+                        
                 #property: username
                 # Add the "role" property to the provider
             
