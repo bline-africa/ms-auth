@@ -22,8 +22,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 private $jwtManager;
     public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwtManager)
     {
-        parent::__construct($registry, User::class);
         $this->$jwtManager = $jwtManager;
+        parent::__construct($registry, User::class);
+        
     }
 
 
