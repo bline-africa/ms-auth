@@ -14,10 +14,10 @@ security:
         #app_user_provider:
         admin:
             entity:
-                id: App\Entity\Admin
+                class: App\Entity\Admin
                 property: username
         user:
-            class: App\Security\CustomUserProvider
+            id: App\Security\CustomUserProvider
             entity:
                 class: App\Entity\User
                 property: username
