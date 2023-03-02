@@ -29,7 +29,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $entityManager = $this->getEntityManager();
 
         $userRepository = $entityManager->getRepository(User::class);
-
+        list($username, $role) = explode(':', $usernameandrole);
         $user = $userRepository->findOneBy([
             'username' => $username,
             'role' => $role
