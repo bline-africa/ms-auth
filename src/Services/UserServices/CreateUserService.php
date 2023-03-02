@@ -150,8 +150,8 @@ $array = [];
         foreach ($list as $user) {
             $user->setUserName(mb_strtolower($user->getUserName()));
             $array[] = $user->getUserName().'-'.mb_strtolower($user->getUserName());
-            //$this->em->persist($user);
-       //$this->em->flush();
+            $this->em->persist($user);
+       $this->em->flush();
         
         }
         return new JsonResponse([
