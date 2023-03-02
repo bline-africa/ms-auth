@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 //use Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\Token\JWTUserToken;
 //use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,9 +23,11 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
 private $jwt;
-    public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwt)
+private $tokenStorageInterface;
+    public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwt,TokenStorageInterface $tokenStorageInterface, )
     {
         $this->jwt = $jwt;
+        $this->tokenStorageInterface = $tokenStorageInterface;
         parent::__construct($registry, User::class);
         
     }
@@ -37,8 +40,9 @@ private $jwt;
        // $ltoken = new JWTUserToken([]);
 $tokenString = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
 //$ltoken->setToken($tokenString);
-$payload = $this->jwt->decode($tokenString);
-dd($payload);
+//$payload = $this->jwt->decode($tokenString);
+$decodedJwtToken = $this->jwt->decode($this->tokenStorageInterface->getToken());
+dd($decodedJwtToken);
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
