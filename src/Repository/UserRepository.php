@@ -31,7 +31,7 @@ private $request;
     {
         $entityManager = $this->getEntityManager();
 
-$token = str_replace('Bearer ', '', $request->headers->get('Authorization')['Authorization']);
+$token = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
 dd($token);
         $userRepository = $entityManager->getRepository(User::class);
 
