@@ -60,7 +60,7 @@ security:
             pattern:  ^/api/token/refresh
             stateless: true
             #anonymous: true
-            provider: ['admin','user']
+            provider: providers
             
         admin_login:
             pattern: ^/api/login_admin
