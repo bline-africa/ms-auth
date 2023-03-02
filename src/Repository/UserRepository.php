@@ -31,7 +31,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $userRepository = $entityManager->getRepository(User::class);
 
         $queryBuilder = $userRepository->createQueryBuilder('u');
-        $queryBuilder->where('u.username = :username OR u.role = :role')
+        $queryBuilder->where('u.username = :username OR u.roles = :role')
             ->setParameter('username', $userNameAndRole)
             ->setParameter('role', $userNameAndRole)
             ->setMaxResults(1);
