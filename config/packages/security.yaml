@@ -20,6 +20,7 @@ security:
             entity:
                 class: App\Entity\User
                 property: username
+                # Add the "role" property to the provider
                 property: role
         all_users:
             chain:
