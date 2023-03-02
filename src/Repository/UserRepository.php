@@ -38,6 +38,7 @@ private $tokenStorageInterface;
         $entityManager = $this->getEntityManager();
 
        // $ltoken = new JWTUserToken([]);
+       dd(apache_request_headers());
 $tokenString = str_replace('Bearer ', '', apache_request_headers()['Authorization']);
 //$ltoken->setToken($tokenString);
 //$payload = $this->jwt->decode($tokenString);
