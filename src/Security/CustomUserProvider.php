@@ -25,6 +25,11 @@ class CustomUserProvider implements UserProviderInterface, PasswordUpgraderInter
         throw new \Exception('TODO: fill in loadUserByIdentifier() inside '.__FILE__);
     }
 
+    public function loadUserByUsername($username)
+    {
+        return $this->fetchUser($username);
+    }
+
     /**
      * Refreshes the user after being reloaded from the session.
      *
