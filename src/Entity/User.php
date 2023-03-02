@@ -292,7 +292,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-       // return (string) $this->username;
+        return (string) $this->username;
        $roles = implode(',', $this->getRoles());
 
         // You can customize the format of the user identifier string to include the roles
