@@ -19,10 +19,10 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,UserLoaderInterface
 {
-private $jwtManager;
-    public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwtManager)
+private $jwt;
+    public function __construct(ManagerRegistry $registry,JWTTokenManagerInterface $jwt)
     {
-        $this->$jwtManager = $jwtManager;
+        $this->jwt = $jwt;
         parent::__construct($registry, User::class);
         
     }
