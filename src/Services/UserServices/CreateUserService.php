@@ -383,7 +383,7 @@ class CreateUserService
                 return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
             }
             $verifUser = $this->userRepository->findOneBy(['username' => $username]);
-
+dd($verifUser);
             if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
                     $pass = false;
