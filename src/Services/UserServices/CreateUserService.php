@@ -409,7 +409,7 @@ class CreateUserService
             }
 
             $verifUserEmail = $this->userRepository->findOneBy(['email' => $email]);
-           // dd($verifUser);
+            dd($verifUser);
             if (count((Array)$verifUserEmail) == 1) {
                 if ($verifUserEmail[0]->getId() != $userId) {
                     $pass = false;
