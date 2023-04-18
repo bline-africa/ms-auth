@@ -412,7 +412,7 @@ class CreateUserService
                 }
             }
         }
-        return new JsonResponse(["valid" => $pass,"reason" => $reason], Response::HTTP_OK);
+        return new JsonResponse(["valid" => $pass,"reason" => $reason,'count' => count($verifUser??0)], Response::HTTP_OK);
     }
 
     public function createUserByAdmin(User $user, int $idProfil): JsonResponse
