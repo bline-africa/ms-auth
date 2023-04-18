@@ -364,12 +364,12 @@ class CreateUserService
         if ($userId == null || $userProfil == null) {
             $verifUser = $this->userRepository->findOneBy(['username' => $username]);
             if (count((Array)$verifUser) >= 2) {
-                $pass == false;
+                $pass = false;
                 $reason = "username";
             }
             $verifUser = $this->userRepository->findOneBy(['email' => $email]);
             if (count((Array)$verifUser) >= 2) {
-                $pass == false;
+                $pass = false;
                 $reason = "email";
             }
         }
