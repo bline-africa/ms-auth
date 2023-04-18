@@ -234,10 +234,10 @@ class ApiLoginController extends AbstractController
         $content = $request->getContent();
         $json = json_decode($content);
 
-        $idProfil = $json->userProfil;
+        $idProfil = $json->userProfil??null;
         $email = $json->email;
         $username = $json->username;
-        $userId = $json->userId;
+        $userId = $json->userId??null;
         // $profil = $profilAdminRepository->findOneBy(['id' => json_decode($content)->profilId]);
         return $userService->checkUserEmailAndUserName($userId, $idProfil, $email, $username);
     }
