@@ -422,7 +422,7 @@ class CreateUserService
                     $reason = "email";
                 }
             }
-            if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
+           /* if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
                 $pass = false; 
                 if($verifUser->getEmail() == $verifUserEmail->getEmail()){
                     $reason = "email";
@@ -431,7 +431,7 @@ class CreateUserService
                     $reason = "username";
                 }
                
-            }
+            }*/
         }
         return new JsonResponse(["valid" => $pass,"reason" => $reason,'count' => []], Response::HTTP_OK);
     }
