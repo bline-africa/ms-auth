@@ -409,14 +409,14 @@ class CreateUserService
             }
 
             $verifUserEmail = $this->userRepository->findBy(['email' => $email]);
-            dd($verifUserEmail);
+           // dd($verifUserEmail);
             if (count((Array)$verifUserEmail) == 1) {
                 if ($verifUserEmail[0]->getId() != $userId) {
                     $pass = false;
                     $reason = "email";
                 }
             }
-            if (count((Array)$verifUserEmail) == 2) {
+            if (count((Array)$verifUserEmail) >= 2) {
                 if ($verifUserEmail[0]->getId() != $userId && $verifUserEmail[1]->getId() != $userId) {
                     $pass = false;
                     $reason = "email";
