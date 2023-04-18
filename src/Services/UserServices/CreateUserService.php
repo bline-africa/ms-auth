@@ -362,11 +362,11 @@ class CreateUserService
         $pass = true;
         if ($userId == null || $userProfil == null) {
             $verifUser = $this->userRepository->findOneBy(['username' => $username]);
-            if (count($verifUser) >= 2) {
+            if (count((Array)$verifUser) >= 2) {
                 $pass == false;
             }
             $verifUser = $this->userRepository->findOneBy(['email' => $email]);
-            if (count($verifUser) >= 2) {
+            if (count((Array)$verifUser) >= 2) {
                 $pass == false;
             }
         }
@@ -381,12 +381,12 @@ class CreateUserService
             }
             $verifUser = $this->userRepository->findOneBy(['username' => $username]);
 
-            if (count($verifUser) == 1) {
+            if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
                     $pass = false;
                 }
             }
-            if (count($verifUser) == 2) {
+            if (count((Array)$verifUser) == 2) {
                 if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
                     $pass = false;
                 }
@@ -394,12 +394,12 @@ class CreateUserService
 
             $verifUser = $this->userRepository->findOneBy(['email' => $email]);
 
-            if (count($verifUser) == 1) {
+            if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
                     $pass = false;
                 }
             }
-            if (count($verifUser) == 2) {
+            if (count((Array)$verifUser) == 2) {
                 if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
                     $pass = false;
                 }
