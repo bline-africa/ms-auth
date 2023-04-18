@@ -403,22 +403,26 @@ class CreateUserService
                 }
             }
 
-            $verifUser = $this->userRepository->findOneBy(['email' => $email]);
+            $verifUserEmail = $this->userRepository->findOneBy(['email' => $email]);
            // dd($verifUser);
-            if (count((Array)$verifUser) == 1) {
-                if ($verifUser[0]->getId() != $userId) {
+            if (count((Array)$verifUserEmail) == 1) {
+                if ($verifUserEmail[0]->getId() != $userId) {
                     $pass = false;
                     $reason = "email";
                 }
             }
-            if (count((Array)$verifUser) == 2) {
-                if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
+            if (count((Array)$verifUserEmail) == 2) {
+                if ($verifUserEmail[0]->getId() != $userId && $verifUserEmail[1]->getId() != $userId) {
                     $pass = false;
                     $reason = "email";
                 }
+            }
+            if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
+                $pass = false;
+                $reason = "already used";
             }
         }
-        return new JsonResponse(["valid" => $pass,"reason" => $reason,'count' => $verifUser], Response::HTTP_OK);
+        return new JsonResponse(["valid" => $pass,"reason" => $reason,'count' => []], Response::HTTP_OK);
     }
 
     public function createUserByAdmin(User $user, int $idProfil): JsonResponse
