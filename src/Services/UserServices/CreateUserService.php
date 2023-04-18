@@ -375,7 +375,12 @@ class CreateUserService
             }
             if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
                 $pass = false;
-                $reason = "already used";
+                if($verifUser->getEmail() == $verifUserEmail->getEmail()){
+                    $reason = "email";
+                }
+                if($verifUser->getUserIdentifier() == $verifUserEmail->getUserIdentifier()){
+                    $reason = "username";
+                }
             }
             //dd($verifUser);
         }
@@ -419,7 +424,13 @@ class CreateUserService
             }
             if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
                 $pass = false;
-                $reason = "already used";
+                if($verifUser->getEmail() == $verifUserEmail->getEmail()){
+                    $reason = "email";
+                }
+                if($verifUser->getUserIdentifier() == $verifUserEmail->getUserIdentifier()){
+                    $reason = "username";
+                }
+               
             }
         }
         return new JsonResponse(["valid" => $pass,"reason" => $reason,'count' => []], Response::HTTP_OK);
