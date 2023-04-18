@@ -360,14 +360,17 @@ class CreateUserService
     public function checkUserEmailAndUserName($userId, $userProfil, $email, $username)
     {
         $pass = true;
+        $reason = "";
         if ($userId == null || $userProfil == null) {
             $verifUser = $this->userRepository->findOneBy(['username' => $username]);
             if (count((Array)$verifUser) >= 2) {
                 $pass == false;
+                $reason = "username";
             }
             $verifUser = $this->userRepository->findOneBy(['email' => $email]);
             if (count((Array)$verifUser) >= 2) {
                 $pass == false;
+                $reason = "email";
             }
         }
         else {
@@ -384,11 +387,13 @@ class CreateUserService
             if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
                     $pass = false;
+                    $reason = "username";
                 }
             }
             if (count((Array)$verifUser) == 2) {
                 if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
                     $pass = false;
+                    $reason = "username";
                 }
             }
 
@@ -397,15 +402,17 @@ class CreateUserService
             if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
                     $pass = false;
+                    $reason = "email";
                 }
             }
             if (count((Array)$verifUser) == 2) {
                 if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
                     $pass = false;
+                    $reason = "email";
                 }
             }
         }
-        return new JsonResponse(["valid" => $pass], Response::HTTP_OK);
+        return new JsonResponse(["valid" => $pass,"reason" => $reason], Response::HTTP_OK);
     }
 
     public function createUserByAdmin(User $user, int $idProfil): JsonResponse
