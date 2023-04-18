@@ -416,8 +416,14 @@ class CreateUserService
                     $reason = "email";
                 }
             }
-            if (count((Array)$verifUserEmail) >= 2) {
-                if ($verifUserEmail[0]->getId() != $userId && $verifUserEmail[1]->getId() != $userId) {
+            if (count((Array)$verifUserEmail) == 2) {
+                if ($verifUserEmail[0]->getId() != $userId && $verifUserEmail[1]->getId() != $userId ) {
+                    $pass = false;
+                    $reason = "email";
+                }
+            }
+            if (count((Array)$verifUserEmail) == 3) {
+                if ($verifUserEmail[0]->getId() != $userId && $verifUserEmail[1]->getId() != $userId  && $verifUserEmail[2]->getId() != $userId ) {
                     $pass = false;
                     $reason = "email";
                 }
