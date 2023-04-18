@@ -367,6 +367,7 @@ class CreateUserService
                 $pass = false;
                 $reason = "username";
             }
+            dd($verifUser);
             $verifUser = $this->userRepository->findOneBy(['email' => $email]);
             if (count((Array)$verifUser) >= 2) {
                 $pass = false;
@@ -398,7 +399,7 @@ class CreateUserService
             }
 
             $verifUser = $this->userRepository->findOneBy(['email' => $email]);
-            dd($verifUser);
+           // dd($verifUser);
             if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
                     $pass = false;
