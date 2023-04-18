@@ -422,12 +422,12 @@ class CreateUserService
                     $reason = "email";
                 }
             }
-            if (count((Array)$verifUserEmail) == 3) {
+           /* if (count((Array)$verifUserEmail) == 3) {
                 if ($verifUserEmail[0]->getId() != $userId && $verifUserEmail[1]->getId() != $userId  && $verifUserEmail[2]->getId() != $userId ) {
                     $pass = false;
                     $reason = "email";
                 }
-            }
+            }*/
            /* if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
                 $pass = false; 
                 if($verifUser->getEmail() == $verifUserEmail->getEmail()){
