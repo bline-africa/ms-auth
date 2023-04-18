@@ -362,13 +362,13 @@ class CreateUserService
         $pass = true;
         $reason = "";
         if ($userId == null || $userProfil == null) {
-            $verifUser = $this->userRepository->findOneBy(['username' => $username]);
+            $verifUser = $this->userRepository->findBy(['username' => $username]);
             if (count((Array)$verifUser) >= 2) {
                 $pass = false;
                 $reason = "username";
             }
            
-            $verifUserEmail = $this->userRepository->findOneBy(['email' => $email]);
+            $verifUserEmail = $this->userRepository->findBy(['email' => $email]);
             if (count((Array)$verifUserEmail) >= 2) {
                 $pass = false;
                 $reason = "email";
@@ -393,7 +393,7 @@ class CreateUserService
             if (!$verifProfil) {
                 return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
             }
-            $verifUser = $this->userRepository->findOneBy(['username' => $username]);
+            $verifUser = $this->userRepository->findBy(['username' => $username]);
 
             if (count((Array)$verifUser) == 1) {
                 if ($verifUser[0]->getId() != $userId) {
@@ -408,7 +408,7 @@ class CreateUserService
                 }
             }
 
-            $verifUserEmail = $this->userRepository->findOneBy(['email' => $email]);
+            $verifUserEmail = $this->userRepository->findBy(['email' => $email]);
             dd($verifUser);
             if (count((Array)$verifUserEmail) == 1) {
                 if ($verifUserEmail[0]->getId() != $userId) {
