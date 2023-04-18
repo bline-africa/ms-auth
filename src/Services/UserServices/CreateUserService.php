@@ -423,7 +423,7 @@ class CreateUserService
                 }
             }
             if($verifUser && $verifUserEmail && $verifUser->getProfilId()->getId() != $verifUserEmail->getProfilId()->getId()){
-                $pass = null;
+                $pass = false;
                 if($verifUser->getEmail() == $verifUserEmail->getEmail()){
                     $reason = "email";
                 }
