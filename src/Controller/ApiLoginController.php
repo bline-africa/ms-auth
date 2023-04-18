@@ -223,6 +223,28 @@ class ApiLoginController extends AbstractController
     }
 
     /**
+     * @Route("api/check/email_username", name="email_username", methods="POST")
+     */
+    public function checkEmailAndUsername(
+        Request $request,
+        SerializerInterface $serializer,
+        CreateUserService $userService
+    ): JsonResponse {
+
+        $content = $request->getContent();
+        $json = json_decode($content);
+
+        $idProfil = $json->userProfil;
+        $email = $json->email;
+        $username = $json->username;
+        $userId = $json->userId;
+        // $profil = $profilAdminRepository->findOneBy(['id' => json_decode($content)->profilId]);
+        return $userService->checkUserEmailAndUserName($userId, $idProfil, $email, $username);
+    }
+
+
+
+    /**
      * @Route("api/create/user_by_admin", name="create_user_by_admin", methods="POST")
      */
     public function createUserByAdmin(

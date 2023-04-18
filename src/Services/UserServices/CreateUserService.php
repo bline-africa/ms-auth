@@ -57,7 +57,8 @@ class CreateUserService
         UserRepository $userRepository,
         HistoryRepository $historyRepository,
         DeleteRequestsRepository $deleteRequestRepository,
-    ) {
+        )
+    {
         $this->em = $em;
         $this->adminRepository = $adminRepository;
         $this->profilRepository = $profilRepository;
@@ -73,7 +74,8 @@ class CreateUserService
     {
         try {
             $verifAdmin = $this->adminRepository->findByUsername("admin");
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         // dd($verifAdmin);
@@ -89,7 +91,8 @@ class CreateUserService
         try {
             $this->em->persist($admin);
             $this->em->flush();
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_BAD_GATEWAY);
         }
         return new JsonResponse(["message" => $admin], Response::HTTP_CREATED);
@@ -99,7 +102,8 @@ class CreateUserService
     {
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $admin->getProfilId()]);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         // dd($verifAdmin);
@@ -118,7 +122,8 @@ class CreateUserService
         try {
             $this->em->persist($admin);
             $this->em->flush();
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_BAD_GATEWAY);
         }
         $json = $this->serializer->serialize($admin, 'json', array_merge([
@@ -139,40 +144,40 @@ class CreateUserService
         return new JsonResponse(
             $json,
             Response::HTTP_ACCEPTED
-        );
+            );
     }
 
     public function trimUserName()
     {
         $list = $this->userRepository->findAll();
-      //  dd($list);
-$array = [];
+        //  dd($list);        $array = [];
         foreach ($list as $user) {
             $user->setUserName(trim(mb_strtolower($user->getUserName())));
-            $array[] = $user->getUserName().'-'.mb_strtolower($user->getUserName());
+            $array[] = $user->getUserName() . '-' . mb_strtolower($user->getUserName());
             $this->em->persist($user);
-       $this->em->flush();
-        
+            $this->em->flush();
+
         }
         return new JsonResponse([
             'message' => $array,
         ], Response::HTTP_OK);
     }
-    public function loginUser(User $user, $idProfil, $historiqueService,$lang)
+    public function loginUser(User $user, $idProfil, $historiqueService, $lang)
     {
         if (null === $user) {
             return new JsonResponse([
-                'message' => ($lang =="en")?'missings credentials':'veuillez remplir tous les champs'
+                'message' => ($lang == "en") ? 'missings credentials' : 'veuillez remplir tous les champs'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         if ($verifProfil == null) {
-            return new JsonResponse(["message" => ($lang =="en")?"Profil not found":"Le profil est introuvable"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang == "en") ? "Profil not found" : "Le profil est introuvable"], Response::HTTP_NOT_FOUND);
         }
         $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
         $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
@@ -181,27 +186,27 @@ $array = [];
             $userVerif = $userMail;
         }
         if ($userVerif == null) {
-            return new JsonResponse(["message" => ($lang =="en")?"address email or username incorrect":"login ou adresse email incorrect"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang == "en") ? "address email or username incorrect" : "login ou adresse email incorrect"], Response::HTTP_NOT_FOUND);
         }
-       // dd($userVerif);
-        $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
-       // dd([$user->getPassword(),$userVerif,$verifPassword]);
+        // dd($userVerif);
+        $verifPassword = $this->hasher->isPasswordValid($userVerif, $user->getPassword());
+        // dd([$user->getPassword(),$userVerif,$verifPassword]);
         if (!$verifPassword) {
-            return new JsonResponse(["message" =>($lang =="en")?"Password incorrect": "Le mot de passe est incorrect"], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(["message" => ($lang == "en") ? "Password incorrect" : "Le mot de passe est incorrect"], Response::HTTP_UNAUTHORIZED);
         }
         if (!$userVerif->getIsvalid()) {
-            /* return new JsonResponse([
-                'message' => 'You need valid your account first, account not activated yet !'
-            ], Response::HTTP_UNAUTHORIZED);*/
+        /* return new JsonResponse([
+         'message' => 'You need valid your account first, account not activated yet !'
+         ], Response::HTTP_UNAUTHORIZED);*/
         }
         if (!$userVerif->isState()) {
             return new JsonResponse([
-                'message' => ($lang =="en")?"Your account is disabled !":'Votre compte est inactif !'
+                'message' => ($lang == "en") ? "Your account is disabled !" : 'Votre compte est inactif !'
             ], Response::HTTP_UNAUTHORIZED);
         }
         if ($userVerif->getDeleted() == true) {
             return new JsonResponse([
-                'message' => ($lang =="en")?"Account deleted":'Ce compte est supprimé'
+                'message' => ($lang == "en") ? "Account deleted" : 'Ce compte est supprimé'
             ], Response::HTTP_NOT_FOUND);
         }
         // dd($user);
@@ -218,7 +223,7 @@ $array = [];
         $this->em->flush();
         // dd($userVerif);
         $userVerif->setUserName(trim($userVerif->getUserName()));
-        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history,], 'json', array_merge([
+        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history, ], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
@@ -226,22 +231,23 @@ $array = [];
     }
 
 
-    public function loginUserTest(User $user, $idProfil, $historiqueService,$lang)
+    public function loginUserTest(User $user, $idProfil, $historiqueService, $lang)
     {
         // dd($user);
         if (null === $user) {
             return new JsonResponse([
-                'message' => ($lang =="en")?'missings credentials':'veuillez remplir tous les champs'
+                'message' => ($lang == "en") ? 'missings credentials' : 'veuillez remplir tous les champs'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         if ($verifProfil == null) {
-            return new JsonResponse(["message" => ($lang =="en")?"Profil not found":"Le profil est introuvable"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang == "en") ? "Profil not found" : "Le profil est introuvable"], Response::HTTP_NOT_FOUND);
         }
         $userVerif = $this->userRepository->findOneBy(["username" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
         $userMail = $this->userRepository->findOneBy(["email" => $user->getUserIdentifier(), 'profilId' => $idProfil]);
@@ -250,27 +256,27 @@ $array = [];
             $userVerif = $userMail;
         }
         if ($userVerif == null) {
-            return new JsonResponse(["message" => ($lang =="en")?"address email or username incorrect":"login ou adresse email incorrect"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => ($lang == "en") ? "address email or username incorrect" : "login ou adresse email incorrect"], Response::HTTP_NOT_FOUND);
         }
-       // dd($userVerif);
-        $verifPassword =  $this->hasher->isPasswordValid($userVerif, $user->getPassword());
-       // dd([$user->getPassword(),$userVerif,$verifPassword]);
+        // dd($userVerif);
+        $verifPassword = $this->hasher->isPasswordValid($userVerif, $user->getPassword());
+        // dd([$user->getPassword(),$userVerif,$verifPassword]);
         if (!$verifPassword) {
-            return new JsonResponse(["message" =>($lang =="en")?"Password incorrect": "Le mot de passe est incorrect"], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(["message" => ($lang == "en") ? "Password incorrect" : "Le mot de passe est incorrect"], Response::HTTP_UNAUTHORIZED);
         }
         if (!$userVerif->getIsvalid()) {
-            /* return new JsonResponse([
-                'message' => 'You need valid your account first, account not activated yet !'
-            ], Response::HTTP_UNAUTHORIZED);*/
+        /* return new JsonResponse([
+         'message' => 'You need valid your account first, account not activated yet !'
+         ], Response::HTTP_UNAUTHORIZED);*/
         }
         if (!$userVerif->isState()) {
             return new JsonResponse([
-                'message' => ($lang =="en")?"Your account is disabled !":'Votre compte est inactif !'
+                'message' => ($lang == "en") ? "Your account is disabled !" : 'Votre compte est inactif !'
             ], Response::HTTP_UNAUTHORIZED);
         }
         if ($userVerif->getDeleted() == true) {
             return new JsonResponse([
-                'message' => ($lang =="en")?"Account deleted":'Ce compte est supprimé'
+                'message' => ($lang == "en") ? "Account deleted" : 'Ce compte est supprimé'
             ], Response::HTTP_NOT_FOUND);
         }
         // dd($user);
@@ -287,7 +293,7 @@ $array = [];
         $this->em->flush();
         // dd($userVerif);
         $userVerif->setUserName(trim($userVerif->getUserName()));
-        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history,], 'json', array_merge([
+        $json = $this->serializer->serialize(["token" => $this->jwt->create($userVerif), 'history' => $history, ], 'json', array_merge([
             'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
         ], ['groups' => 'User:read']));
         //dd($json);
@@ -299,7 +305,8 @@ $array = [];
         // $emailConstraint = new EmailValidator();
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         //  dd($verifProfil);
@@ -338,7 +345,8 @@ $array = [];
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
 
@@ -349,13 +357,63 @@ $array = [];
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
+    public function checkUserEmailAndUserName($userId, $userProfil, $email, $username)
+    {
+        $pass = true;
+        if ($userId == null || $userProfil == null) {
+            $verifUser = $this->userRepository->findOneBy(['username' => $username]);
+            if (count($verifUser) >= 2) {
+                $pass == false;
+            }
+            $verifUser = $this->userRepository->findOneBy(['email' => $email]);
+            if (count($verifUser) >= 2) {
+                $pass == false;
+            }
+        }
+        else {
+            $verifUser = $this->userRepository->findOneBy(['id' => $userId]);
+            if (!$verifUser) {
+                return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
+            }
+            $verifProfil = $this->profilRepository->findOneBy(["id" => $userProfil]);
+            if (!$verifProfil) {
+                return new JsonResponse(["message" => "Profil not found"], Response::HTTP_NOT_FOUND);
+            }
+            $verifUser = $this->userRepository->findOneBy(['username' => $username]);
+
+            if (count($verifUser) == 1) {
+                if ($verifUser[0]->getId() != $userId) {
+                    $pass = false;
+                }
+            }
+            if (count($verifUser) == 2) {
+                if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
+                    $pass = false;
+                }
+            }
+
+            $verifUser = $this->userRepository->findOneBy(['email' => $email]);
+
+            if (count($verifUser) == 1) {
+                if ($verifUser[0]->getId() != $userId) {
+                    $pass = false;
+                }
+            }
+            if (count($verifUser) == 2) {
+                if ($verifUser[0]->getId() != $userId && $verifUser[1]->getId() != $userId) {
+                    $pass = false;
+                }
+            }
+        }
+    }
 
     public function createUserByAdmin(User $user, int $idProfil): JsonResponse
     {
         // $emailConstraint = new EmailValidator();
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         //  dd($verifProfil);
@@ -395,7 +453,8 @@ $array = [];
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
 
@@ -410,10 +469,11 @@ $array = [];
     {
         try {
             $verifProfil = $this->profilRepository->findOneBy(["id" => $idProfil]);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        if (strtoupper($user->getAccountType()) != "FACEBOOK" && strtoupper($user->getAccountType())  != "GOOGLE" && strtoupper($user->getAccountType())  != "APPLE") {
+        if (strtoupper($user->getAccountType()) != "FACEBOOK" && strtoupper($user->getAccountType()) != "GOOGLE" && strtoupper($user->getAccountType()) != "APPLE") {
             return new JsonResponse(["message" => "account type not found"], Response::HTTP_NOT_FOUND);
         }
         //  dd($verifProfil);
@@ -463,7 +523,8 @@ $array = [];
             $this->em->flush();
 
             $history = $historiqueService->addHistory($verifUser);
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             return new JsonResponse(["message" => $ex->getMessage()], Response::HTTP_FORBIDDEN);
         }
 
@@ -521,12 +582,11 @@ $array = [];
     {
         $user = $this->userRepository->findOneBy(['id' => $uuid]);
         if ($user) {
-           /* $histories = $this->historyRepository->findBy(['userId' => $user->getId()]);
-
-            foreach ($histories as $historie) {
-                $this->em->remove($historie);
-            }*/
-            //$this->em->remove($user);
+        /* $histories = $this->historyRepository->findBy(['userId' => $user->getId()]);
+         foreach ($histories as $historie) {
+         $this->em->remove($historie);
+         }*/
+        //$this->em->remove($user);
         }
 
         $this->em->flush();
@@ -570,7 +630,8 @@ $array = [];
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    function generateRandomString($length = 10) {
+    function generateRandomString($length = 10)
+    {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
@@ -612,7 +673,8 @@ $array = [];
         if (!$find) {
             if ($local) {
                 return ['message' => 'user not found'];
-            } else {
+            }
+            else {
                 return new JsonResponse(["message" => "User not found"], Response::HTTP_NOT_FOUND);
             }
         }
@@ -624,7 +686,8 @@ $array = [];
 
         if ($local) {
             return ['message' => 'user deleted successfully'];
-        } else {
+        }
+        else {
             return new JsonResponse(["message" => "deleted successfully"], Response::HTTP_OK);
         }
     }
