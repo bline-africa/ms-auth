@@ -405,6 +405,7 @@ class CreateUserService
                 }
             }
         }
+        return new JsonResponse(["valid" => $pass], Response::HTTP_OK);
     }
 
     public function createUserByAdmin(User $user, int $idProfil): JsonResponse
